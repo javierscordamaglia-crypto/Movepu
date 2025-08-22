@@ -1,0 +1,1541 @@
+import React, { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
+// --- Dati Statici del Programma ---
+// Definizione delle fasce elastiche con il loro peso e emoji rappresentativa.
+const fasce = {
+  verde: { peso: "2,27 kg", emoji: "🟢" },
+  blu: { peso: "4,54 kg", emoji: "🔵" },
+  gialla: { peso: "9,07 kg", emoji: "🟡" },
+  rossa: { peso: "13,62 kg", emoji: "🔴" },
+  nera: { peso: "18,16 kg", emoji: "⚫" },
+};
+
+// Elenco degli esercizi di riscaldamento consigliati.
+const warmUpExercises = [
+  "Jumping Jack (leggeri) – 1 min",
+  "Cerchi con le braccia – 30 sec avanti / 30 sec indietro",
+  "World’s Greatest Stretch – 30 sec per lato",
+  "Bodyweight Squat – 10 rip",
+  "Swing della gamba (laterale e posteriore) – 10x per gamba",
+  "Glute Bridge con fascia verde – 10 rip (per attivare i glutei)",
+];
+
+// Elenco degli esercizi di defaticamento consigliati.
+const coolDownExercises = [
+  "Allungamento quadricipiti – 30 sec per gamba",
+  "Allungamento flessori (hamstring) – 30 sec per gamba",
+  "Piriforme stretch (in posizione incrociata) – 30 sec per lato",
+  "Cat-Cow (micio-mucca) – 1 min",
+  "Respirazione consapevole (addominale) – 1 min",
+];
+
+// Funzione per generare l'intero programma di allenamento di 12 settimane.
+// La logica è divisa in 3 fasi (4 settimane ciascuna), con progressione degli esercizi.
+// Ho aggiunto suggerimenti dettagliati sul posizionamento della fascia e sulla scelta del peso.
+const generateProgramData = () => {
+  const allWeeks = [];
+
+  // FASE 1: Settimane 1-4 - Focus sui fondamentali e l'attivazione.
+  for (let i = 1; i <= 4; i++) {
+    const weekNum = i;
+    let squatFascia = "verde";
+    let ponteFascia = "gialla";
+    let sideLegRaiseFascia = "verde";
+    if (weekNum >= 3) {
+      ponteFascia = "blu";
+      sideLegRaiseFascia = "blu";
+    }
+    allWeeks.push({
+      settimana: weekNum,
+      fase: "Fase 1 – Fondamentali & Attivazione",
+      allenamenti: [
+        {
+          giorno: "Lunedì – Gambe + Glutei",
+          esercizi: [
+            {
+              nome: "Squat con fascia", serie: 3, ripetizioni: 12, fascia: squatFascia, pausa: 60,
+              suggerimento: "YouTube: Squat con fascia attivazione glutei",
+              bandPlacement: "Posiziona la fascia appena sopra le ginocchia. Mantieni la tensione spingendo le ginocchia verso l'esterno per attivare i glutei.",
+              bandSuggestionDetail: `Per iniziare, usa la fascia ${fasce[squatFascia].emoji} ${squatFascia} (${fasce[squatFascia].peso}). Se l'esecuzione è facile e controllata, puoi passare a una fascia più resistente come la blu per aumentare l'intensità.`
+            },
+            {
+              nome: "Affondo statico", serie: 3, ripetizioni: 10, fascia: "blu", pausa: 60,
+              suggerimento: "YouTube: Affondo statico con fascia",
+              bandPlacement: "Posiziona la fascia appena sopra le ginocchia. Assicurati che non scivoli durante l'esercizio.",
+              bandSuggestionDetail: `La fascia ${fasce["blu"].emoji} blu (${fasce["blu"].peso}) è ideale per questo esercizio, fornendo una buona resistenza senza compromettere la forma. Concentrati sulla stabilità.`
+            },
+            {
+              nome: "Ponte con fascia", serie: 3, ripetizioni: 15, fascia: ponteFascia, pausa: 60,
+              suggerimento: "YouTube: Ponte con fascia glutei",
+              bandPlacement: "Posiziona la fascia appena sopra le ginocchia. Premi attivamente le ginocchia verso l'esterno per coinvolgere i glutei medi.",
+              bandSuggestionDetail: `Inizia con la fascia ${fasce[ponteFascia].emoji} ${ponteFascia} (${fasce[ponteFascia].peso}). Se l'attivazione è insufficiente o troppo facile, passa alla rossa (${fasce["rossa"].peso}).`
+            },
+            {
+              nome: "Side leg raise", serie: 3, ripetizioni: 15, fascia: sideLegRaiseFascia, pausa: 45,
+              suggerimento: "YouTube: Side leg raise con fascia",
+              bandPlacement: "Posiziona la fascia attorno alle caviglie o appena sopra le ginocchia, a seconda del livello di difficoltà desiderato.",
+              bandSuggestionDetail: `La fascia ${fasce[sideLegRaiseFascia].emoji} ${sideLegRaiseFascia} (${fasce[sideLegRaiseFascia].peso}) è adatta per questo esercizio. Per un maggiore isolamento, usa la fascia attorno alle caviglie.`
+            },
+            {
+              nome: "Bird Dog con fascia", serie: 3, ripetizioni: 10, fascia: "verde", pausa: 45,
+              suggerimento: "YouTube: Bird Dog con fascia",
+              bandPlacement: "Posiziona la fascia attorno alle caviglie, assicurandoti che sia tesa tra le gambe.",
+              bandSuggestionDetail: `La fascia ${fasce["verde"].emoji} verde (${fasce["verde"].peso}) offre una resistenza leggera, perfetta per mantenere la stabilità del core e migliorare la coordinazione senza eccessivo stress.`
+            },
+          ],
+        },
+        {
+          giorno: "Martedì – Superiori + Core",
+          esercizi: [
+            {
+              nome: "Push-up (ginocchia o muro)", serie: 3, ripetizioni: 8, fascia: null, pausa: 60,
+              suggerimento: "YouTube: Push-up principianti",
+              bandPlacement: "Nessuna fascia richiesta.",
+              bandSuggestionDetail: "Questo esercizio non prevede l'uso della fascia. Concentrati sulla forma corretta e sulla progressione verso i push-up standard."
+            },
+            {
+              nome: "Remata con fascia", serie: 3, ripetizioni: 12, fascia: "blu", pausa: 60,
+              suggerimento: "YouTube: Remata con fascia",
+              bandPlacement: "Siediti con le gambe tese, avvolgi la fascia attorno ai piedi e afferra le estremità con le mani. Oppure, puoi legare la fascia a un punto fisso davanti a te e tirarla.",
+              bandSuggestionDetail: `La fascia ${fasce["blu"].emoji} blu (${fasce["blu"].peso}) è un ottimo punto di partenza. Assicurati di mantenere la schiena dritta e di tirare con i dorsali.`
+            },
+            {
+              nome: "Plank con fascia", serie: 3, ripetizioni: 20, fascia: "verde", pausa: 45,
+              suggerimento: "YouTube: Plank con fascia",
+              bandPlacement: "Posiziona la fascia appena sopra le ginocchia. Spingi attivamente le ginocchia verso l'esterno.",
+              bandSuggestionDetail: `La fascia ${fasce["verde"].emoji} verde (${fasce["verde"].peso}) aggiunge una leggera resistenza che intensifica l'attivazione del core e dei glutei, migliorando la stabilità generale.`
+            },
+            {
+              nome: "Shoulder press con fascia", serie: 3, ripetizioni: 12, fascia: "blu", pausa: 60,
+              suggerimento: "YouTube: Shoulder press con fascia",
+              bandPlacement: "Metti i piedi sulla fascia, larghezza spalle, afferrando le estremità con le mani all'altezza delle spalle, palmi in avanti. Premi sopra la testa.",
+              bandSuggestionDetail: `Usa la fascia ${fasce["blu"].emoji} blu (${fasce["blu"].peso}). Le fasce da 60 cm sono usabili per questo esercizio se ti posizioni sopra di esse. Per una resistenza maggiore, puoi raddoppiare la fascia o usare una più spessa.`
+            },
+            {
+              nome: "Dead Bug con fascia", serie: 3, ripetizioni: 12, fascia: "verde", pausa: 45,
+              suggerimento: "YouTube: Dead Bug con fascia",
+              bandPlacement: "Posiziona la fascia attorno alle caviglie o sotto la pianta dei piedi per un'estensione più controllata.",
+              bandSuggestionDetail: `La fascia ${fasce["verde"].emoji} verde (${fasce["verde"].peso}) è ottima per iniziare a sentire la resistenza senza compromettere la forma. Mantiene il core attivo durante il movimento.`
+            },
+          ],
+        },
+        {
+          giorno: "Giovedì – Gambe + Core",
+          esercizi: [
+            {
+              nome: "Side squat (affondo laterale)", serie: 3, ripetizioni: 10, fascia: "blu", pausa: 60,
+              suggerimento: "YouTube: Side squat esecuzione",
+              bandPlacement: "Posiziona la fascia appena sopra le ginocchia. Mantieni la tensione costante.",
+              bandSuggestionDetail: `La fascia ${fasce["blu"].emoji} blu (${fasce["blu"].peso}) è ideale per aggiungere resistenza ai glutei e all'interno coscia. Assicurati di mantenere il busto eretto.`
+            },
+            {
+              nome: "Ponte con gamba sollevata", serie: 3, ripetizioni: 10, fascia: ponteFascia, pausa: 60,
+              suggerimento: "YouTube: Ponte con gamba sollevata",
+              bandPlacement: "Posiziona la fascia appena sopra le ginocchia. L'altra gamba è sollevata e tesa.",
+              bandSuggestionDetail: `Usa la fascia ${fasce[ponteFascia].emoji} ${ponteFascia} (${fasce[ponteFascia].peso}). Concentrati sull'attivazione di un singolo gluteo. Un peso maggiore può essere usato se senti l'esercizio troppo facile.`
+            },
+            {
+              nome: "Marching bridge", serie: 3, ripetizioni: 12, fascia: "verde", pausa: 45,
+              suggerimento: "YouTube: Marching bridge",
+              bandPlacement: "Posiziona la fascia appena sopra le ginocchia. Mentre sollevi un ginocchio, spingi l'altro ginocchio contro la fascia.",
+              bandSuggestionDetail: `La fascia ${fasce["verde"].emoji} verde (${fasce["verde"].peso}) aiuta a mantenere l'attivazione dei glutei e del core durante il movimento dinamico.`
+            },
+            {
+              nome: "Clamshell", serie: 3, ripetizioni: 15, fascia: sideLegRaiseFascia, pausa: 45,
+              suggerimento: "YouTube: Clamshell con fascia",
+              bandPlacement: "Posiziona la fascia appena sopra le ginocchia, mantenendo i piedi uniti.",
+              bandSuggestionDetail: `La fascia ${fasce[sideLegRaiseFascia].emoji} ${sideLegRaiseFascia} (${fasce[sideLegRaiseFascia].peso}) è perfetta per isolare e rafforzare i glutei medi, essenziali per la stabilità del bacino.`
+            },
+            {
+              nome: "Side plank con fascia", serie: 3, ripetizioni: 20, fascia: "verde", pausa: 45,
+              suggerimento: "YouTube: Side plank con fascia",
+              bandPlacement: "Posiziona la fascia appena sopra le ginocchia. Mantieni i piedi uniti o uno sopra l'altro.",
+              bandSuggestionDetail: `La fascia ${fasce["verde"].emoji} verde (${fasce["verde"].peso}) aggiunge una leggera resistenza che impegna maggiormente gli obliqui e i muscoli stabilizzatori dell'anca.`
+            },
+          ],
+        },
+        {
+          giorno: "Venerdì – Total Body + Stabilità",
+          esercizi: [
+            {
+              nome: "Squat to overhead press", serie: 3, ripetizioni: 10, fascia: "blu", pausa: 60,
+              suggerimento: "YouTube: Squat to overhead press con fascia",
+              bandPlacement: "Metti i piedi sulla fascia, larghezza spalle, afferra le estremità della fascia con le mani all'altezza delle spalle, palmi in avanti. Premi sopra la testa.",
+              bandSuggestionDetail: `Per questo esercizio composto, la fascia ${fasce["blu"].emoji} blu (${fasce["blu"].peso}) offre un buon equilibrio tra resistenza per le gambe e per le spalle. Concentrati sulla fluidità del movimento.`
+            },
+            {
+              nome: "Walking lunge", serie: 3, ripetizioni: 8, fascia: "blu", pausa: 60,
+              suggerimento: "YouTube: Walking lunge con fascia",
+              bandPlacement: "Posiziona la fascia appena sopra le ginocchia. Assicurati che rimanga in posizione durante il movimento.",
+              bandSuggestionDetail: `La fascia ${fasce["blu"].emoji} blu (${fasce["blu"].peso}) aumenta l'attivazione dei glutei e dei quadricipiti. Mantieni il core attivo per la stabilità.`
+            },
+            {
+              nome: "Plank con ginocchio al gomito", serie: 3, ripetizioni: 10, fascia: "verde", pausa: 45,
+              suggerimento: "YouTube: Plank con ginocchio al gomito",
+              bandPlacement: "Posiziona la fascia attorno alle caviglie. Porta il ginocchio al gomito opponente contro la resistenza della fascia.",
+              bandSuggestionDetail: `La fascia ${fasce["verde"].emoji} verde (${fasce["verde"].peso}) offre una resistenza leggera ma efficace per intensificare l'attivazione del core e migliorare la coordinazione.`
+            },
+            {
+              nome: "Glute bridge roll", serie: 3, ripetizioni: 12, fascia: ponteFascia, pausa: 60,
+              suggerimento: "YouTube: Glute bridge roll con fascia",
+              bandPlacement: "Posiziona la fascia appena sopra le ginocchia. Durante la spinta, contrai i glutei e mantieni la tensione.",
+              bandSuggestionDetail: `Usa la fascia ${fasce[ponteFascia].emoji} ${ponteFascia} (${fasce[ponteFascia].peso}). Questo esercizio aiuta a migliorare la mobilità della colonna lombare e l'attivazione dei glutei.`
+            },
+            {
+              nome: "Pallof press", serie: 3, ripetizioni: 10, fascia: "blu", pausa: 60,
+              suggerimento: "YouTube: Pallof press con fascia",
+              bandPlacement: "Avvolgi la fascia attorno a un punto fisso (es. un palo). Afferra entrambe le estremità della fascia con le mani, posizionandoti lateralmente.",
+              bandSuggestionDetail: `La fascia ${fasce["blu"].emoji} blu (${fasce["blu"].peso}) è ideale per questo esercizio anti-rotazione del core. Metti più distanza tra te e il punto fisso per aumentare la resistenza.`
+            },
+          ],
+        },
+      ],
+    });
+  }
+
+  // FASE 2: Settimane 5-8 - Costruzione della forza con intensità aumentata.
+  for (let i = 5; i <= 8; i++) {
+    const weekNum = i;
+    allWeeks.push({
+      settimana: weekNum,
+      fase: "Fase 2 – Costruzione Forza",
+      allenamenti: [
+        {
+          giorno: "Lunedì – Gambe + Glutei (Intensità aumentata)",
+          esercizi: [
+            {
+              nome: "Squat con fascia", serie: 4, ripetizioni: 12, fascia: "gialla", pausa: 75,
+              suggerimento: "YouTube: Squat con fascia attivazione glutei avanzato",
+              bandPlacement: "Posiziona la fascia appena sopra le ginocchia, concentrandoti sulla massima tensione esterna durante lo squat.",
+              bandSuggestionDetail: `Per questa fase, la fascia ${fasce["gialla"].emoji} gialla (${fasce["gialla"].peso}) è consigliata. Se la forma è compromessa, torna alla blu. L'obiettivo è la tensione costante.`
+            },
+            {
+              nome: "Affondo camminato", serie: 4, ripetizioni: 10, fascia: "gialla", pausa: 60,
+              suggerimento: "YouTube: Affondo camminato con fascia",
+              bandPlacement: "Fascia appena sopra le ginocchia. Concentrati sulla stabilità e sul controllo del movimento mentre cammini.",
+              bandSuggestionDetail: `La fascia ${fasce["gialla"].emoji} gialla (${fasce["gialla"].peso}) aggiunge una resistenza significativa. Se senti troppa tensione, passa alla blu.`
+            },
+            {
+              nome: "Hip Thrust con fascia", serie: 4, ripetizioni: 12, fascia: "rossa", pausa: 75,
+              suggerimento: "YouTube: Hip Thrust con fascia",
+              bandPlacement: "Posiziona la fascia appena sopra le ginocchia. Alza i fianchi e premi le ginocchia verso l'esterno con forza.",
+              bandSuggestionDetail: `Per massimizzare l'attivazione dei glutei in questa fase, la fascia ${fasce["rossa"].emoji} rossa (${fasce["rossa"].peso}) è eccellente. Assicurati una buona esecuzione prima di aumentare ulteriormente la resistenza.`
+            },
+            {
+              nome: "Clamshells con fascia", serie: 4, ripetizioni: 20, fascia: "verde", pausa: 45,
+              suggerimento: "YouTube: Clamshells con fascia",
+              bandPlacement: "Fascia appena sopra le ginocchia, mantenendo i piedi uniti. Movimento lento e controllato.",
+              bandSuggestionDetail: `La fascia ${fasce["verde"].emoji} verde (${fasce["verde"].peso}) è ancora efficace qui per un alto numero di ripetizioni, concentrandosi sulla resistenza muscolare e la forma.`
+            },
+            {
+              nome: "Donkey Kicks con fascia", serie: 4, ripetizioni: 15, fascia: "blu", pausa: 45,
+              suggerimento: "YouTube: Donkey Kicks con fascia",
+              bandPlacement: "Fascia appena sopra le ginocchia o attorno alle caviglie per maggiore difficoltà. Spingi il tallone verso l'alto.",
+              bandSuggestionDetail: `La fascia ${fasce["blu"].emoji} blu (${fasce["blu"].peso}) fornisce una resistenza sufficiente per isolare i glutei. Evita di inarcare la schiena.`
+            },
+          ],
+        },
+        {
+          giorno: "Martedì – Superiori + Core (Intensità aumentata)",
+          esercizi: [
+            {
+              nome: "Push-up (regolari o inclinati)", serie: 4, ripetizioni: 10, fascia: null, pausa: 75,
+              suggerimento: "YouTube: Push-up corretta esecuzione",
+              bandPlacement: "Nessuna fascia richiesta.",
+              bandSuggestionDetail: "Questo esercizio è a corpo libero. Concentrati sull'aumento delle ripetizioni o sulla diminuzione dell'inclinazione se li fai inclinati."
+            },
+            {
+              nome: "Pull Apart con fascia", serie: 4, ripetizioni: 15, fascia: "verde", pausa: 45,
+              suggerimento: "YouTube: Band Pull Apart",
+              bandPlacement: "Tieni la fascia con entrambe le mani, larghezza spalle, all'altezza del petto. Tira le mani all'esterno, contraendo le scapole.",
+              bandSuggestionDetail: `La fascia ${fasce["verde"].emoji} verde (${fasce["verde"].peso}) è ideale per riscaldare i muscoli della schiena e migliorare la postura, consentendo un alto numero di ripetizioni.`
+            },
+            {
+              nome: "Side Plank", serie: 4, ripetizioni: 30, fascia: null, pausa: 45,
+              suggerimento: "YouTube: Side Plank benefici",
+              bandPlacement: "Nessuna fascia richiesta.",
+              bandSuggestionDetail: "Esercizio a corpo libero per il core. Mantieni la linea retta dal capo ai piedi."
+            },
+            {
+              nome: "Rear Delt Fly con fascia", serie: 4, ripetizioni: 12, fascia: "blu", pausa: 60,
+              suggerimento: "YouTube: Rear Delt Fly con fascia",
+              bandPlacement: "Tieni la fascia con entrambe le mani, larghezza spalle. Con le braccia leggermente piegate, tira la fascia verso l'esterno e all'indietro.",
+              bandSuggestionDetail: `La fascia ${fasce["blu"].emoji} blu (${fasce["blu"].peso}) è efficace per isolare i deltoidi posteriori. Controlla il movimento in entrambe le fasi.`
+            },
+            {
+              nome: "Leg Raises", serie: 4, ripetizioni: 15, fascia: null, pausa: 45,
+              suggerimento: "YouTube: Leg Raises per addominali bassi",
+              bandPlacement: "Nessuna fascia richiesta.",
+              bandSuggestionDetail: "Esercizio a corpo libero per gli addominali. Mantieni la zona lombare aderente al pavimento."
+            },
+          ],
+        },
+        {
+          giorno: "Giovedì – Gambe + Core (con progressione)",
+          esercizi: [
+            {
+              nome: "Bulgarian Split Squat", serie: 4, ripetizioni: 8, fascia: "blu", pausa: 90,
+              suggerimento: "YouTube: Bulgarian Split Squat forma",
+              bandPlacement: "Posiziona la fascia appena sopra le ginocchia. La gamba posteriore è elevata su una panca.",
+              bandSuggestionDetail: `La fascia ${fasce["blu"].emoji} blu (${fasce["blu"].peso}) aggiunge un'ottima resistenza per i glutei e i quadricipiti. Concentrati sulla profondità e sulla stabilità.`
+            },
+            {
+              nome: "Stacco Rumeno con fascia", serie: 4, ripetizioni: 12, fascia: "gialla", pausa: 60,
+              suggerimento: "YouTube: Stacco Rumeno con fascia",
+              bandPlacement: "Metti i piedi sulla fascia, larghezza fianchi, afferrando le estremità con le mani. Mantieni le gambe quasi tese e fletti il busto in avanti.",
+              bandSuggestionDetail: `La fascia ${fasce["gialla"].emoji} gialla (${fasce["gialla"].peso}) è eccellente per attivare i posteriori della coscia e i glutei. Mantieni la schiena dritta e il movimento controllato.`
+            },
+            {
+              nome: "Crunch inversi", serie: 4, ripetizioni: 15, fascia: null, pausa: 45,
+              suggerimento: "YouTube: Crunch inversi esecuzione",
+              bandPlacement: "Nessuna fascia richiesta.",
+              bandSuggestionDetail: "Esercizio a corpo libero per gli addominali bassi. Solleva il bacino dal pavimento usando il core."
+            },
+            {
+              nome: "Pistol Squat (assistito)", serie: 4, ripetizioni: 5, fascia: null, pausa: 90,
+              suggerimento: "YouTube: Pistol Squat principianti",
+              bandPlacement: "Nessuna fascia richiesta.",
+              bandSuggestionDetail: "Questo esercizio a corpo libero si concentra sulla forza unilaterale. Usa un supporto (sedia, muro) per assistere se necessario."
+            },
+            {
+              nome: "Jump squat (atterraggio morbido)", serie: 3, ripetizioni: 8, fascia: "verde", pausa: 60,
+              suggerimento: "YouTube: Jump squat esecuzione corretta",
+              bandPlacement: "Fascia appena sopra le ginocchia. L'obiettivo è esplosività e atterraggio controllato.",
+              bandSuggestionDetail: `La fascia ${fasce["verde"].emoji} verde (${fasce["verde"].peso}) aggiunge una leggera resistenza per l'attivazione dei glutei durante l'esplosività.`
+            },
+          ],
+        },
+        {
+          giorno: "Venerdì – Total Body + Stabilità (con progressione)",
+          esercizi: [
+            {
+              nome: "Military Press con fascia", serie: 4, ripetizioni: 10, fascia: "gialla", pausa: 90,
+              suggerimento: "YouTube: Military Press con fascia",
+              bandPlacement: "Metti i piedi sulla fascia, larghezza spalle, afferra le estremità della fascia con le mani all'altezza delle spalle, palmi in avanti. Premi sopra la testa.",
+              bandSuggestionDetail: `La fascia ${fasce["gialla"].emoji} gialla (${fasce["gialla"].peso}) offre una buona resistenza. Le fasce da 60 cm (loop chiuse) sono utilizzabili in questo modo. Se cerchi più resistenza, puoi raddoppiare la fascia o usare un tipo diverso (tubolare con maniglie) per carichi maggiori.`
+            },
+            {
+              nome: "Face Pulls con fascia", serie: 4, ripetizioni: 15, fascia: "blu", pausa: 60,
+              suggerimento: "YouTube: Face Pulls con fascia",
+              bandPlacement: "Avvolgi la fascia attorno a un punto fisso (es. una colonna) all'altezza del petto. Afferra le estremità con entrambe le mani e tira verso il viso, separando le mani.",
+              bandSuggestionDetail: `La fascia ${fasce["blu"].emoji} blu (${fasce["blu"].peso}) è ottima per rafforzare la parte alta della schiena e la postura. Concentrati sul movimento delle scapole.`
+            },
+            {
+              nome: "Dips (assistiti)", serie: 4, ripetizioni: 8, fascia: null, pausa: 75,
+              suggerimento: "YouTube: Dips assistiti per tricipiti",
+              bandPlacement: "Nessuna fascia richiesta. Puoi usare una sedia o una panca per l'assistenza.",
+              bandSuggestionDetail: "Esercizio a corpo libero per tricipiti e petto. Se necessario, posiziona i piedi a terra per ridurre il carico."
+            },
+            {
+              nome: "Hammer Curls con fascia", serie: 4, ripetizioni: 12, fascia: "blu", pausa: 60,
+              suggerimento: "YouTube: Hammer Curls con fascia",
+              bandPlacement: "Metti un piede sulla fascia, afferra l'altra estremità con la mano, palmo rivolto verso il corpo. Fletti l'avambraccio.",
+              bandSuggestionDetail: `La fascia ${fasce["blu"].emoji} blu (${fasce["blu"].peso}) è una buona scelta per i bicipiti. Mantieni il gomito fisso e controlla il movimento.`
+            },
+          ],
+        },
+      ],
+    });
+  }
+
+  // FASE 3: Settimane 9-12 - Massima intensificazione e potenza.
+  for (let i = 9; i <= 12; i++) {
+    const weekNum = i;
+    allWeeks.push({
+      settimana: weekNum,
+      fase: "Fase 3 – Intensificazione",
+      allenamenti: [
+        {
+          giorno: `Lunedì – Gambe + Glutei (Intensità Massima)`,
+          esercizi: [
+            {
+              nome: "Squat con fascia profondo", serie: 4, ripetizioni: 10, fascia: "rossa", pausa: 90,
+              suggerimento: "YouTube: Squat con fascia profondo avanzato",
+              bandPlacement: "Posiziona la fascia appena sopra le ginocchia. Scendi il più possibile, mantenendo la schiena dritta e le ginocchia spinte all'esterno.",
+              bandSuggestionDetail: `La fascia ${fasce["rossa"].emoji} rossa (${fasce["rossa"].peso}) è per l'intensità massima. Assicurati che la tua mobilità e forma siano impeccabili per evitare infortuni. Se senti dolore, riduci la resistenza.`
+            },
+            {
+              nome: "Bulgarian Split Squat con Fascia", serie: 4, ripetizioni: 8, fascia: "gialla", pausa: 90,
+              suggerimento: "YouTube: Bulgarian Split Squat con fascia avanzato",
+              bandPlacement: "Fascia appena sopra le ginocchia. La gamba posteriore elevata. Concentrati sull'equilibrio e sulla spinta.",
+              bandSuggestionDetail: `La fascia ${fasce["gialla"].emoji} gialla (${fasce["gialla"].peso}) eleva la sfida per i glutei e i quadricipiti. Questo esercizio richiede un ottimo controllo. `
+            },
+            {
+              nome: "Ponte con fascia (con pausa isometrica)", serie: 4, ripetizioni: 10, fascia: "nera", pausa: 75,
+              suggerimento: "YouTube: Ponte con fascia con pausa isometrica",
+              bandPlacement: "Posiziona la fascia appena sopra le ginocchia. Quando raggiungi il picco, mantieni la contrazione isometrica per 2-3 secondi, spingendo le ginocchia verso l'esterno.",
+              bandSuggestionDetail: `La fascia ${fasce["nera"].emoji} nera (${fasce["nera"].peso}) offre la massima resistenza. La pausa isometrica aumenta ulteriormente l'attivazione e la forza dei glutei. `
+            },
+            {
+              nome: "Affondo laterale con fascia (pesante)", serie: 4, ripetizioni: 10, fascia: "rossa", pausa: 60,
+              suggerimento: "YouTube: Affondo laterale con fascia pesante",
+              bandPlacement: "Fascia appena sopra le ginocchia. Fai un passo laterale ampio, mantenendo la tensione sulla fascia.",
+              bandSuggestionDetail: `La fascia ${fasce["rossa"].emoji} rossa (${fasce["rossa"].peso}) è per un allenamento intenso di interno ed esterno coscia. Controlla il ritorno alla posizione iniziale.`
+            },
+            {
+              nome: "Deadlift rumeno a una gamba (assistito)", serie: 4, ripetizioni: 8, fascia: "blu", pausa: 60,
+              suggerimento: "YouTube: Deadlift rumeno a una gamba con fascia",
+              bandPlacement: "Posiziona la fascia attorno alle caviglie o sotto il piede della gamba di appoggio e tieni l'altra estremità con le mani. L'altra gamba si estende all'indietro.",
+              bandSuggestionDetail: `La fascia ${fasce["blu"].emoji} blu (${fasce["blu"].peso}) offre un buon feedback sulla tensione. Se non hai un buon equilibrio, usa un supporto leggero.`
+            },
+          ],
+        },
+        {
+          giorno: `Martedì – Superiori + Core (Forza esplosiva)`,
+          esercizi: [
+            {
+              nome: "Explosive Push-up (ginocchia/regolari)", serie: 4, ripetizioni: 6, fascia: null, pausa: 90,
+              suggerimento: "YouTube: Explosive Push-up",
+              bandPlacement: "Nessuna fascia richiesta.",
+              bandSuggestionDetail: "Esercizio a corpo libero per sviluppare forza esplosiva. Cerca di staccare le mani da terra. Se troppo difficile, fallo dalle ginocchia."
+            },
+            {
+              nome: "Remata con fascia (intensa)", serie: 4, ripetizioni: 10, fascia: "rossa", pausa: 75,
+              suggerimento: "YouTube: Remata con fascia intensa",
+              bandPlacement: "Siediti con le gambe tese, avvolgi la fascia attorno ai piedi e afferra le estremità con le mani. Oppure lega a un punto fisso.",
+              bandSuggestionDetail: `La fascia ${fasce["rossa"].emoji} rossa (${fasce["rossa"].peso}) offre una resistenza significativa. Concentrati sulla contrazione della schiena e sul mantenimento della postura.`
+            },
+            {
+              nome: "Plank dinamico con fascia", serie: 4, ripetizioni: 15, fascia: "verde", pausa: 60,
+              suggerimento: "YouTube: Plank dinamico con fascia",
+              bandPlacement: "Posiziona la fascia appena sopra le ginocchia. Esegui movimenti laterali delle gambe o delle braccia mantenendo la stabilità del core.",
+              bandSuggestionDetail: `La fascia ${fasce["verde"].emoji} verde (${fasce["verde"].peso}) è sufficiente per aggiungere un elemento di instabilità e dinamismo, costringendo il core a lavorare di più.`
+            },
+            {
+              nome: "Shoulder press con fascia (pesante)", serie: 4, ripetizioni: 10, fascia: "rossa", pausa: 75,
+              suggerimento: "YouTube: Shoulder press con fascia pesante",
+              bandPlacement: "Metti i piedi sulla fascia, larghezza spalle, afferrando le estremità con le mani. Premi con forza sopra la testa.",
+              bandSuggestionDetail: `Per un'alta intensità, usa la fascia ${fasce["rossa"].emoji} rossa (${fasce["rossa"].peso}). Puoi anche raddoppiare la fascia per un extra carico. Ricorda che le fasce da 60 cm sono usabili, ma per carichi molto pesanti potresti preferire fasce tubolari.`
+            },
+            {
+              nome: "Dead Bug con fascia (con resistenza aggiunta)", serie: 4, ripetizioni: 10, fascia: "blu", pausa: 60,
+              suggerimento: "YouTube: Dead Bug con fascia resistenza",
+              bandPlacement: "Posiziona la fascia attorno alle caviglie o incrociata tra mano e piede opposto per una maggiore resistenza diagonale.",
+              bandSuggestionDetail: `La fascia ${fasce["blu"].emoji} blu (${fasce["blu"].peso}) con un posizionamento strategico (es. incrociato) aumenta la sfida per il core, migliorando la stabilità e il controllo.`
+            },
+          ],
+        },
+        {
+          giorno: `Giovedì – Gambe + Core (Potenza & Resistenze)`,
+          esercizi: [
+            {
+              nome: "Jump squat con fascia (alta intensità)", serie: 4, ripetizioni: 8, fascia: "gialla", pausa: 75,
+              suggerimento: "YouTube: Jump squat con fascia alta intensità",
+              bandPlacement: "Fascia appena sopra le ginocchia. Spingi con forza per saltare, atterrando morbidamente.",
+              bandSuggestionDetail: `La fascia ${fasce["gialla"].emoji} gialla (${fasce["gialla"].peso}) è eccellente per aumentare la potenza nelle gambe e l'attivazione dei glutei durante il salto.`
+            },
+            {
+              nome: "Pistol Squat (assistito/completo)", serie: 4, ripetizioni: 5, fascia: null, pausa: 90,
+              suggerimento: "YouTube: Pistol Squat principianti",
+              bandPlacement: "Nessuna fascia richiesta.",
+              bandSuggestionDetail: "L'obiettivo è eseguire il Pistol Squat completo. Continua a usare un'assistenza minima se necessario."
+            },
+            {
+              nome: "Mountain Climbers (veloci)", serie: 4, ripetizioni: 30, fascia: null, pausa: 45,
+              suggerimento: "YouTube: Mountain Climbers veloci",
+              bandPlacement: "Nessuna fascia richiesta.",
+              bandSuggestionDetail: "Esercizio cardio e per il core. Concentrati sulla velocità e sul mantenimento della posizione di plank."
+            },
+            {
+              nome: "Box Jumps (su scalino/panca)", serie: 4, ripetizioni: 8, fascia: null, pausa: 60,
+              suggerimento: "YouTube: Box Jumps per principianti",
+              bandPlacement: "Nessuna fascia richiesta.",
+              bandSuggestionDetail: "Esercizio pliometrico per la potenza delle gambe. Scegli un'altezza sicura e concentrati sull'atterraggio morbido."
+            },
+            {
+              nome: "Russian Twist con peso", serie: 4, ripetizioni: 20, fascia: null, pausa: 45,
+              suggerimento: "YouTube: Russian Twist con peso",
+              bandPlacement: "Nessuna fascia richiesta.",
+              bandSuggestionDetail: "Puoi usare un manubrio leggero, una bottiglia d'acqua o qualsiasi peso per aumentare l'intensità per gli obliqui. Gira solo il busto, non le braccia."
+            },
+          ],
+        },
+        {
+          giorno: `Venerdì – Circuito Finale Total Body (Settimana ${weekNum})`,
+          esercizi: [
+            {
+              nome: "Circuito: 10x Jump squat (verde)", serie: 1, ripetizioni: 1, fascia: "verde", pausa: 0,
+              suggerimento: "Eseguire in circuito con gli altri esercizi. 3 round – Riposa 1 min tra i round.",
+              bandPlacement: "Fascia appena sopra le ginocchia. Mantieni l'esplosività anche con fatica.",
+              bandSuggestionDetail: `Per il circuito, la fascia ${fasce["verde"].emoji} verde (${fasce["verde"].peso}) è un buon compromesso per mantenere l'intensità attraverso tutti i round.`
+            },
+            {
+              nome: "Circuito: 15x Ponte con fascia (rossa)", serie: 1, ripetizioni: 1, fascia: "rossa", pausa: 0,
+              suggerimento: "Eseguire in circuito con gli altri esercizi. 3 round – Riposa 1 min tra i round.",
+              bandPlacement: "Fascia appena sopra le ginocchia. Spingi con forza i fianchi verso l'alto.",
+              bandSuggestionDetail: `La fascia ${fasce["rossa"].emoji} rossa (${fasce["rossa"].peso}) per i ponti glutei manterrà alta l'attivazione in questo circuito.`
+            },
+            {
+              nome: "Circuito: 10x Push-up", serie: 1, ripetizioni: 1, fascia: null, pausa: 0,
+              suggerimento: "Eseguire in circuito con gli altri esercizi. 3 round – Riposa 1 min tra i round.",
+              bandPlacement: "Nessuna fascia richiesta.",
+              bandSuggestionDetail: "Esegui i push-up (ginocchia o regolari) mantenendo una buona forma nonostante la fatica."
+            },
+            {
+              nome: "Circuito: 30 sec Plank con fascia", serie: 1, ripetizioni: 1, fascia: "verde", pausa: 0,
+              suggerimento: "Eseguire in circuito con gli altri esercizi. 3 round – Riposa 1 min tra i round.",
+              bandPlacement: "Fascia appena sopra le ginocchia. Mantieni il corpo in linea retta.",
+              bandSuggestionDetail: `La fascia ${fasce["verde"].emoji} verde (${fasce["verde"].peso}) aggiunge una sfida al plank, attivando maggiormente i glutei.`
+            },
+            {
+              nome: "Circuito: 20x Pallof press (10 per lato)", serie: 1, ripetizioni: 1, fascia: "blu", pausa: 0,
+              suggerimento: "Eseguire in circuito con gli altri esercizi. 3 round – Riposa 1 min tra i round.",
+              bandPlacement: "Avvolgi la fascia attorno a un punto fisso, afferra le estremità e pressa in avanti dal petto, resistendo alla rotazione.",
+              bandSuggestionDetail: `La fascia ${fasce["blu"].emoji} blu (${fasce["blu"].peso}) è ottima per mantenere l'intensità nel Pallof Press durante il circuito.`
+            },
+          ],
+        },
+      ],
+    });
+  }
+
+  return allWeeks;
+};
+
+// Generazione del programma completo una sola volta all'avvio dell'applicazione.
+const programma = generateProgramData();
+
+// --- Componente Program ---
+// Questo componente gestisce la visualizzazione e l'interazione con il programma di allenamento.
+const Program = ({ setCurrentView }) => {
+  // Stato per tenere traccia dello stato di completamento di ogni esercizio.
+  // La chiave è una stringa unica (es. 'w0_a0_e0') e il valore un oggetto { seriesDone, isFinished }.
+  const [completed, setCompleted] = useState({});
+  // Stato per tenere traccia della settimana di allenamento corrente visualizzata.
+  const [currentWeek, setCurrentWeek] = useState(0);
+  // Stato per mostrare il popup con il suggerimento YouTube per un esercizio.
+  const [popupSuggestion, setPopupSuggestion] = useState(null);
+  // Stato per gestire l'espansione delle sezioni nella panoramica del programma (es. Riscaldamento, Defaticamento).
+  const [expandedSection, setExpandedSection] = useState(null);
+
+  // Riferimento per il contenitore dei pulsanti delle settimane per lo scroll automatico.
+  const weekButtonsContainerRef = useRef(null);
+
+  // --- Stato e Riferimenti per il Timer della Pausa ---
+  const [timer, setTimer] = useState({
+    active: false,
+    seconds: 0,
+    workoutKey: null, // Chiave dell'esercizio che ha attivato il timer
+    pauseDuration: 0, // Durata iniziale della pausa per il popup finale
+    exerciseName: '', // Nome dell'esercizio per il popup
+  });
+  const [showBreakEndPopup, setShowBreakEndPopup] = useState(false); // Stato per il popup "pausa terminata"
+  const timerRef = useRef(null); // Riferimento per il setInterval
+  const audioContextRef = useRef(null); // Riferimento per l'AudioContext
+
+  // Stati per il popup dei dettagli dell'esercizio
+  const [showExerciseDetailsPopup, setShowExerciseDetailsPopup] = useState(false);
+  const [selectedExerciseForDetails, setSelectedExerciseForDetails] = useState(null);
+
+
+  // Inizializza AudioContext una sola volta all'inizio
+  useEffect(() => {
+    if (!audioContextRef.current) {
+      audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+    }
+  }, []);
+
+  // Funzione per riprodurre un semplice beep
+  const playBeep = (frequency, duration, type) => {
+    if (!audioContextRef.current) {
+      console.warn("AudioContext non inizializzato. Impossibile riprodurre il suono.");
+      return;
+    }
+    const oscillator = audioContextRef.current.createOscillator();
+    const gainNode = audioContextRef.current.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContextRef.current.destination);
+
+    oscillator.type = type; // 'sine', 'square', 'sawtooth', 'triangle'
+    oscillator.frequency.setValueAtTime(frequency, audioContextRef.current.currentTime);
+    gainNode.gain.setValueAtTime(0, audioContextRef.current.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.5, audioContextRef.current.currentTime + 0.01);
+    gainNode.gain.linearRampToValueAtTime(0, audioContextRef.current.currentTime + duration);
+
+    oscillator.start(audioContextRef.current.currentTime);
+    oscillator.stop(audioContextRef.current.currentTime + duration);
+  };
+
+  // Logica del timer della pausa
+  useEffect(() => {
+    if (timer.active && timer.seconds > 0) {
+      timerRef.current = setInterval(() => {
+        setTimer(prev => ({ ...prev, seconds: prev.seconds - 1 }));
+      }, 1000);
+    } else if (timer.active && timer.seconds === 0) {
+      // Timer terminato
+      clearInterval(timerRef.current);
+      playBeep(600, 0.3, 'sine'); // Beep di fine pausa (più acuto)
+      setShowBreakEndPopup(true);
+      // Resetta lo stato del timer, ma manteniamo la chiave dell'esercizio per il popup finale
+      setTimer(prev => ({ ...prev, active: false }));
+    } else if (!timer.active && timerRef.current) {
+      // Timer interrotto esternamente o non attivo, pulisci l'intervallo
+      clearInterval(timerRef.current);
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [timer.active, timer.seconds]); // Dipende dallo stato 'active' e dai 'seconds' del timer
+
+  // Effetto per lo scroll automatico delle settimane
+  useEffect(() => {
+    if (weekButtonsContainerRef.current) {
+      const activeWeekButton = weekButtonsContainerRef.current.querySelector('.week-button.active');
+      if (activeWeekButton) {
+        activeWeekButton.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      }
+    }
+  }, [currentWeek]); // Dipende dalla settimana corrente
+
+  // --- Funzioni di Gestione Esercizi ---
+
+  // Gestisce l'azione principale per l'avanzamento delle serie o la gestione della pausa.
+  const handlePrimaryAction = (weekIdx, workoutIdx, exerciseIdx, exercise) => {
+    const key = `w${weekIdx}_a${workoutIdx}_e${exerciseIdx}`;
+    const currentProgress = completed[key] || { seriesDone: 0, isFinished: false };
+    let { seriesDone, isFinished } = currentProgress;
+    const { serie: totalSeries, pausa, nome: exerciseName } = exercise;
+
+    // Se un timer è attivo per un *altro* esercizio, blocca le interazioni con questo.
+    if (timer.active && timer.workoutKey !== key) {
+        return;
+    }
+
+    // Se il timer è attivo per *questo* esercizio, il click significa "Salta Pausa".
+    if (timer.active && timer.workoutKey === key) {
+      skipBreak();
+      return;
+    }
+
+    // Se l'esercizio è già finito, non fare nulla.
+    if (isFinished) {
+        return;
+    }
+
+    // Logica per l'avanzamento delle serie
+    if (seriesDone === 0) { // Primo click: Inizia Serie 1
+      const newSeriesDone = 1;
+      setCompleted(prev => ({ ...prev, [key]: { seriesDone: newSeriesDone, isFinished: newSeriesDone === totalSeries } }));
+    } else if (seriesDone > 0 && seriesDone < totalSeries) { // Completa una serie intermedia e avvia la pausa
+      const newSeriesDone = seriesDone + 1;
+      const newIsFinished = newSeriesDone === totalSeries;
+      setCompleted(prev => ({ ...prev, [key]: { seriesDone: newSeriesDone, isFinished: newIsFinished } }));
+
+      // Se non è l'ultima serie *e* è definita una pausa, avvia il timer.
+      if (newSeriesDone < totalSeries && pausa > 0) {
+        setTimer({
+          active: true,
+          seconds: pausa,
+          workoutKey: key,
+          pauseDuration: pausa,
+          exerciseName: exerciseName,
+        });
+        playBeep(440, 0.2, 'sine'); // Segnale sonoro all'inizio della pausa
+      }
+    } else if (seriesDone === totalSeries && !isFinished) { // Ultimo click: Registra Fine
+      setCompleted(prev => ({ ...prev, [key]: { ...currentProgress, isFinished: true } }));
+    }
+  };
+
+  // Funzione per saltare la pausa corrente.
+  const skipBreak = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current); // Ferma il timer
+    }
+    playBeep(600, 0.3, 'sine'); // Beep di fine pausa
+    setShowBreakEndPopup(true); // Mostra il popup "Pausa Terminata"
+    setTimer(prev => ({ ...prev, active: false, seconds: 0 })); // Disattiva il timer
+  };
+
+  // Genera il link di ricerca su YouTube per un dato suggerimento.
+  const getYoutubeLink = (suggestion) => {
+    const searchTerms = suggestion.replace(/YouTube:\s*/i, "").trim();
+    return `https://www.youtube.com/results?search_query=${encodeURIComponent(searchTerms)}`;
+  };
+
+  // Funzione per espandere o collassare le sezioni della panoramica.
+  const toggleSection = (sectionName) => {
+    setExpandedSection(expandedSection === sectionName ? null : sectionName);
+  };
+
+  // --- Componente ausiliario per l'indicatore visivo delle serie ---
+  const SeriesIndicator = ({ current, total }) => {
+    return (
+      <div className="series-indicator-group">
+        {[...Array(total)].map((_, i) => (
+          <motion.div
+            key={i}
+            className={`series-dot ${i < current ? 'completed-dot' : 'pending-dot'}`}
+            initial={{ scale: 0.8, opacity: 0.5 }}
+            animate={{ scale: i < current ? 1 : 0.8, opacity: i < current ? 1 : 0.5 }}
+            transition={{ duration: 0.2 }}
+          />
+        ))}
+      </div>
+    );
+  };
+
+  return (
+    <>
+      {/* Stili CSS globali e specifici del componente. Utilizza variabili CSS per coerenza e facilità di modifica. */}
+      <style>
+        {`
+          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+          
+          :root {
+            --primary: #0066ff; /* Blu principale */
+            --primary-dark: #004cbb; /* Blu scuro */
+            --secondary: #ff6b00; /* Arancione (per timer) */
+            --accent: #00e080; /* Verde brillante (per accenti e completato) */
+            --dark: #121826; /* Sfondo scuro */
+            --light: #ffffff; /* Testo chiaro */
+            --gray: #e0e6f0; /* Grigio chiaro */
+            --shadow-sm: 0 4px 12px rgba(0, 102, 255, 0.16);
+            --shadow-md: 0 10px 25px rgba(0, 102, 255, 0.2);
+            --shadow-lg: 0 20px 40px rgba(0, 102, 255, 0.25);
+            --border: 1px solid rgba(0, 102, 255, 0.2);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --radius-lg: 2rem;
+            --radius-md: 1.25rem;
+            --radius-sm: 0.75rem;
+          }
+
+          body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            color: var(--light);
+            background: linear-gradient(135deg, #0f1b3a 0%, #1a365d 50%, #0066ff 100%); /* Sfondo scuro e dinamico */
+            min-height: 100vh;
+            background-attachment: fixed;
+            overflow-x: hidden;
+          }
+
+          .program-container {
+            min-height: 100vh;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+          }
+
+          /* Effetto pattern di sfondo */
+          .program-container::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PHBhdGggZD0iTTEwIDBoLTEwdi0xMCBMMCAyMC41IDMuNSAyNCAwIDMwIDAgNDAgNSA0NSA1IDM1IDEwIDMwIDEwIDIwIDE1IDI1IDE1IDE1IDEwIDEwek0yMCAwaC0xMHYxMGgxMHYtMTB6bTEwIDBoLTEwdjEwaDEwdi0xMHptMTAgMGgtMTB2MTBoMTB2LTEwemm1MCAwaC0xMHYxMGgxMHYtMTB6bTEwIDBoLTEwdjEwaDEwdi0xMHptMTAgMGgtMTB2MTBoMTB2LTEwek0wIDMwdi0xMGgxMHYxMGgtMTB6bTEwIDBoLTEwdjEwaDEwdi0xMHptMTAgMGgtMTB2MTBoMTB2LTEwemm10IDBoLTEwdjEwaDEwdi0xMHptMTAgMGgtMTB2MTBoMTB2LTEwemm1MCAwaC0xMHYxMGgxMHYtMTAwek00MCAwdi0xMGgxMHYxMHoiIGZpbGw9IiNmZmZmZmYwMSIvPjwvc3ZnPg==');
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: -1;
+          }
+
+          .header-section {
+            width: 100%;
+            max-width: 1200px;
+            margin-bottom: 2.5rem;
+            padding: 1.8rem 2.5rem;
+            background: rgba(255, 255, 255, 0.15); /* Sfondo semi-trasparente */
+            backdrop-filter: blur(20px); /* Effetto blur forte */
+            border: var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            position: relative;
+            overflow: hidden; /* Per l'effetto shine */
+          }
+
+          /* Effetto shine sull'header per un tocco moderno */
+          .header-section::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255, 107, 0, 0.1), transparent);
+            pointer-events: none;
+            animation: shine 4s ease-in-out infinite;
+          }
+
+          @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+          }
+
+          .header-title {
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: var(--light);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            z-index: 2; /* Assicura che il testo sia sopra lo shine */
+            letter-spacing: -0.5px;
+          }
+          @media (max-width: 767px) {
+            .header-title {
+              font-size: 2.2rem;
+              text-align: center;
+              width: 100%;
+            }
+          }
+
+          .dashboard-button {
+            padding: 1rem 2.2rem;
+            background: linear-gradient(135deg, var(--secondary), #cc5a00); /* Arancione energico */
+            color: white;
+            font-weight: 700;
+            border: none;
+            border-radius: var(--radius-md);
+            box-shadow: 0 8px 20px rgba(255, 107, 0, 0.4);
+            transition: var(--transition);
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 2;
+          }
+
+          .dashboard-button:hover {
+            transform: translateY(-5px) scale(1.04);
+            box-shadow: 0 12px 25px rgba(255, 107, 0, 0.5);
+          }
+          .dashboard-button:active {
+            transform: translateY(-2px);
+          }
+
+          .program-overview-card, .workout-card {
+            width: 100%;
+            max-width: 1200px;
+            background: rgba(255, 255, 255, 0.12); /* Sfondo semi-trasparente */
+            backdrop-filter: blur(16px); /* Blur più forte */
+            border: var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2.5rem;
+            padding: 2.2rem;
+            transition: var(--transition);
+            overflow: hidden;
+          }
+
+          .program-overview-card:hover, .workout-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-lg);
+          }
+
+          .overview-title, .workouts-title, .workout-day-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--light);
+            margin-bottom: 1.8rem;
+            text-align: center;
+            position: relative;
+          }
+
+          .overview-title::after, .workouts-title::after, .workout-day-title::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: -10px; /* Posiziona la sottolineatura sotto il testo */
+            transform: translateX(-50%);
+            width: 80px;
+            height: 5px;
+            background: linear-gradient(90deg, var(--secondary), var(--accent)); /* Sfumatura per la sottolineatura */
+            border-radius: 10px;
+          }
+
+          .section-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.2rem 0;
+          }
+          .section-item:last-child {
+            border-bottom: none;
+          }
+
+          .section-button {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.4rem;
+            color: var(--light);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.6rem 0;
+            transition: var(--transition);
+          }
+
+          .section-button:hover {
+            color: var(--accent);
+            transform: translateX(8px);
+          }
+
+          .section-button span {
+            font-size: 0.9rem;
+            color: var(--gray);
+            transition: transform 0.3s ease;
+          }
+
+          .section-button span.rotated {
+            transform: rotate(180deg);
+            color: var(--accent);
+          }
+
+          .section-content {
+            margin-top: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            padding-left: 1.5rem;
+            line-height: 1.8;
+            font-weight: 400;
+          }
+
+          .section-content ul {
+            list-style: none; /* Rimuove i bullet point predefiniti */
+            padding-left: 0;
+          }
+
+          .section-content li {
+            position: relative;
+            padding-left: 1.8rem;
+            margin: 0.6rem 0;
+          }
+
+          .section-content li::before {
+            content: '•'; /* Aggiunge un bullet point personalizzato */
+            color: var(--accent);
+            font-size: 1.4rem;
+            position: absolute;
+            left: 0;
+            top: -0.2rem;
+          }
+          .section-content p {
+            margin-bottom: 1em;
+          }
+          .section-content strong {
+            color: var(--accent);
+            font-weight: 600;
+          }
+
+          .week-selector-container {
+            width: 100%;
+            max-width: 1200px;
+            overflow-x: auto;
+            margin-bottom: 2.5rem;
+            padding: 0.5rem 0;
+            scrollbar-width: thin; /* Stile scrollbar Firefox */
+            scrollbar-color: var(--secondary) transparent;
+          }
+
+          /* Stile scrollbar Webkit (Chrome, Safari) */
+          .week-selector-container::-webkit-scrollbar {
+            height: 6px;
+          }
+          .week-selector-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+          }
+          .week-selector-container::-webkit-scrollbar-thumb {
+            background: var(--secondary);
+            border-radius: 3px;
+          }
+
+          .week-buttons-wrapper {
+            display: flex;
+            gap: 1.2rem;
+            padding: 0.8rem;
+            min-width: fit-content;
+            justify-content: center;
+          }
+
+          .week-button {
+            padding: 1rem 2rem;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--light);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+          }
+
+          .week-button.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 0 0 4px rgba(0, 224, 128, 0.3), var(--shadow-sm); /* Anello verde per attivo */
+            transform: translateY(-3px) scale(1.05);
+            font-weight: 800;
+          }
+
+          .week-button:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+          }
+
+          .workout-day-title {
+            font-size: 1.9rem;
+            color: var(--light);
+          }
+
+          .exercise-item {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding: 1.4rem;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+            margin-bottom: 0.8rem;
+          }
+
+          @media (min-width: 640px) {
+            .exercise-item {
+              flex-direction: row;
+              justify-content: space-between;
+              align-items: center;
+            }
+          }
+
+          .exercise-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(6px);
+            border-left: 3px solid var(--accent);
+          }
+
+          .exercise-details-clickable-area { /* Nuovo stile per l'area cliccabile */
+            flex-grow: 1; /* Permette di occupare lo spazio disponibile */
+            cursor: pointer;
+            padding: 0.5rem 0; /* Aggiunge un po' di padding per una migliore area di clic */
+            display: flex; /* Permette all'icona di essere inline con il testo */
+            align-items: center;
+            gap: 0.5rem; /* Spazio tra testo e icona */
+          }
+          .exercise-details-clickable-area:hover .exercise-name-display {
+            color: var(--accent); /* Cambia colore al testo al passaggio del mouse */
+          }
+          .exercise-details-clickable-area:hover .info-icon {
+            transform: rotate(10deg) scale(1.1); /* Ruota l'icona al passaggio del mouse */
+            color: var(--accent);
+          }
+
+
+          .exercise-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+          }
+          .exercise-details p {
+            margin: 0;
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.7);
+          }
+          @media (min-width: 640px) {
+            .exercise-details {
+              flex-direction: row;
+              align-items: center;
+              gap: 0.8rem;
+            }
+          }
+
+          .exercise-name-display { /* Nuovo stile per il nome dell'esercizio */
+            transition: color 0.3s ease;
+            font-weight: 600; /* Rendi il nome dell'esercizio più evidente */
+            font-size: 1.1rem;
+          }
+          .exercise-name-completed {
+            text-decoration: line-through;
+            color: var(--accent);
+            font-weight: 600;
+            opacity: 0.8;
+          }
+
+          .info-icon {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.1rem;
+            transition: transform 0.3s ease, color 0.3s ease;
+          }
+
+
+          .series-indicator-group {
+            display: flex;
+            gap: 0.4rem;
+            margin-left: 0.8rem; /* Spazio dall'esercizio */
+          }
+
+          .series-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid var(--gray);
+            background-color: transparent;
+            transition: all 0.2s ease-in-out;
+          }
+
+          .series-dot.completed-dot {
+            background-color: var(--accent);
+            border-color: var(--accent);
+          }
+
+          .exercise-buttons-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+          }
+
+          .exercise-button {
+            padding: 0.7rem 1.4rem;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            transition: var(--transition);
+            min-width: 110px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+          }
+
+          .exercise-button.disabled {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            cursor: not-allowed;
+            box-shadow: none;
+          }
+
+          .exercise-button:not(.disabled) {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+          }
+
+          .exercise-button.timer-active {
+            background: linear-gradient(135deg, var(--secondary), #cc5a00);
+            animation: pulse 1.5s infinite;
+          }
+
+          @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 107, 0, 0.4); }
+            70% { box-shadow: 0 0 0 8px rgba(255, 107, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 107, 0, 0); }
+          }
+
+          .exercise-button:not(.disabled):hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 102, 255, 0.3);
+          }
+
+          .youtube-button {
+            background: linear-gradient(135deg, #e60000, #b30000);
+          }
+
+          .youtube-button:hover:not(.disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(230, 0, 0, 0.35);
+          }
+
+          .popup-overlay {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(0, 102, 255, 0.6), rgba(18, 24, 38, 0.9));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            backdrop-filter: blur(4px);
+          }
+
+          .popup-content {
+            background: rgba(255, 255, 255, 0.98);
+            color: var(--dark);
+            padding: 2.5rem;
+            border-radius: var(--radius-lg);
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            position: relative;
+            overflow: hidden;
+          }
+
+          .popup-content::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 5px;
+            background: linear-gradient(90deg, var(--secondary), var(--accent));
+          }
+
+          .popup-content h3 {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-weight: 800;
+          }
+
+          .popup-content p {
+            margin-bottom: 1.5rem;
+            color: #333;
+            font-size: 1.1rem;
+            line-height: 1.6;
+          }
+
+          .popup-link {
+            color: #e60000;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 0 1rem;
+          }
+          .popup-link:hover {
+            text-decoration: underline;
+          }
+
+          .popup-button-close, .popup-break-end-button, .popup-skip-break-button {
+            padding: 0.8rem 1.8rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            color: white;
+            margin: 0.5rem;
+          }
+
+          .popup-button-close {
+            background: #6c757d;
+            color: white;
+          }
+          .popup-button-close:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+          }
+
+          .popup-break-end-button {
+            background: linear-gradient(135deg, var(--accent), #00b368);
+            color: white;
+          }
+          .popup-break-end-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(0, 224, 128, 0.4);
+          }
+
+          .timer-display {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--primary);
+            margin: 1.2rem 0;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+          }
+        `}
+      </style>
+
+      <div className="program-container">
+        {/* Sezione Header: Contiene il titolo del programma e un pulsante per tornare alla Dashboard. */}
+        <motion.div
+          initial={{ y: -60, opacity: 0, boxShadow: "0 15px 30px rgba(0, 0, 0, 0.15)" }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="header-section"
+          whileHover={{ translateY: -4 }}
+        >
+          <h1 className="header-title">Programma 12 Settimane</h1>
+          <motion.button
+            whileHover={{ scale: 1.08, boxShadow: "0 8px 20px rgba(255, 107, 0, 0.3)" }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => setCurrentView("dashboard")}
+            className="dashboard-button"
+          >
+            Torna alla Dashboard
+          </motion.button>
+        </motion.div>
+
+        {/* Sezione Panoramica del Programma: Fornisce informazioni generali, riscaldamento e defaticamento. */}
+        <motion.div
+          initial={{ y: 40, opacity: 0, boxShadow: "0 20px 40px rgba(0, 0, 0, 0.12)" }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.8 }}
+          className="program-overview-card"
+          whileHover={{ translateY: -4 }}
+        >
+          <h2 className="overview-title">Panoramica del Programma</h2>
+          {[
+            { title: "1️⃣ Introduzione", content: "Benvenuta nel tuo percorso di trasformazione di 12 settimane! Questo programma è stato creato per aiutarti a costruire forza, resistenza e a raggiungere i tuoi obiettivi di fitness, il tutto utilizzando le pratiche fasce elastiche. Preparati a sfidare il tuo corpo e a vedere risultati reali!" },
+            { title: "2️⃣ Guida alle Fasce Elastiche", content: "Le fasce elastiche sono il tuo strumento segreto per un allenamento efficace. Il programma utilizza fasce ad anello chiuso da 60 cm, disponibili in diversi livelli di resistenza. Ogni colore corrisponde a un peso (verde: 2,27 kg; blu: 4,54 kg; gialla: 9,07 kg; rossa: 13,62 kg; nera: 18,16 kg). Utilizzarle correttamente ti garantirà il massimo beneficio per ogni esercizio! Ricorda che per alcuni esercizi che coinvolgono spinte verticali con carichi molto elevati (come la Military Press), le fasce da 60 cm potrebbero non essere ottimali come le fasce tubolari con maniglie, ma possono essere comunque utilizzate con il giusto posizionamento sotto i piedi." },
+            { title: "3️⃣ Struttura del Programma", content: "Il programma è strategicamente diviso in 3 fasi da 4 settimane ciascuna. Ogni fase è progettata per progredire in termini di intensità e complessità, assicurandoti di costruire una base solida e di avanzare costantemente verso i tuoi obiettivi. Segui la progressione per massimizzare i risultati e prevenire stalli." },
+            { title: "4️⃣ Riscaldamento", content: warmUpExercises.map((e, i) => <li key={i}>{e}</li>) },
+            { title: "5️⃣ Defaticamento", content: coolDownExercises.map((e, i) => <li key={i}>{e}</li>) },
+          ].map((section, idx) => (
+            <div key={idx} className="section-item">
+              <button
+                className="section-button"
+                onClick={() => toggleSection(`section${idx}`)}
+              >
+                {section.title} <span className={expandedSection === `section${idx}` ? "rotated" : ""}>▼</span>
+              </button>
+              {/* Utilizzo di AnimatePresence per animare l'entrata e l'uscita delle sezioni espanse */}
+              <AnimatePresence>
+                {expandedSection === `section${idx}` && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="section-content"
+                  >
+                    {/* Correggi il rendering: se è un array (di <li>), usa <ul>, altrimenti renderizza il contenuto direttamente (stringa) */}
+                    {Array.isArray(section.content) ? <ul>{section.content}</ul> : <p>{section.content}</p>}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
+        </motion.div>
+
+        {/* Selettore Settimane: Permette di navigare tra le diverse settimane del programma. */}
+        <motion.div
+          initial={{ y: 40, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.4, duration: 0.8 }}
+          className="week-selector-container"
+        >
+          <div className="week-buttons-wrapper" ref={weekButtonsContainerRef}> {/* Aggiunto ref qui */}
+            {programma.map((w, idx) => (
+              <motion.button
+                key={w.settimana}
+                onClick={() => setCurrentWeek(idx)}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 + idx * 0.05, duration: 0.4 }}
+                whileHover={{ y: -3, scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className={`week-button ${currentWeek === idx ? "active" : ""}`}
+              >
+                Settimana {w.settimana}
+              </motion.button>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Sezione Allenamenti: Visualizza gli allenamenti e gli esercizi per la settimana selezionata. */}
+        <div className="workouts-section">
+          <h2 className="workouts-title">
+            Settimana {programma[currentWeek].settimana} - {programma[currentWeek].fase}
+          </h2>
+          {programma[currentWeek].allenamenti.map((workout, wi) => (
+            <motion.div
+              key={wi}
+              initial={{ y: 40, opacity: 0, boxShadow: "0 20px 40px rgba(0, 0, 0, 0.12)" }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.6 + wi * 0.1, duration: 0.6 }}
+              className="workout-card"
+              whileHover={{ translateY: -4 }}
+            >
+              <h3 className="workout-day-title">{workout.giorno}</h3>
+              {workout.esercizi.map((ex, ei) => {
+                const key = `w${currentWeek}_a${wi}_e${ei}`; // Chiave unica per l'esercizio.
+                const currentExerciseProgress = completed[key] || { seriesDone: 0, isFinished: false }; // Assicura che sia sempre un oggetto
+                const seriesDone = currentExerciseProgress.seriesDone; // Accesso diretto
+                const isFinished = currentExerciseProgress.isFinished; // Accesso diretto
+                const isTimerRunningForThisExercise = timer.active && timer.workoutKey === key;
+                const isAnyTimerActive = timer.active; // True se qualsiasi timer è attivo
+
+                return (
+                  <motion.div
+                    key={ei}
+                    initial={{ opacity: 0, x: -20, boxShadow: "0 0px 0px rgba(0, 0, 0, 0)" }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.7 + ei * 0.05, duration: 0.4 }}
+                    className="exercise-item"
+                    whileHover={{ x: 6, backgroundColor: 'rgba(255, 255, 255, 0.15)', borderLeft: '3px solid var(--accent)' }}
+                  >
+                    {/* Area cliccabile per i dettagli dell'esercizio */}
+                    <div
+                      className="exercise-details-clickable-area"
+                      onClick={() => {
+                        setSelectedExerciseForDetails(ex);
+                        setShowExerciseDetailsPopup(true);
+                      }}
+                    >
+                      <div className="exercise-details">
+                        <span className={`${isFinished ? "exercise-name-completed" : "exercise-name-display"}`}>
+                          {ex.nome} ({ex.serie}x{ex.ripetizioni})
+                        </span>
+                        {ex.fascia && <span> {fasce[ex.fascia].emoji}</span>}
+                        {/* Indicatore visivo delle serie completate */}
+                        <SeriesIndicator current={seriesDone} total={ex.serie} />
+                        {/* Icona di informazione per suggerire che è cliccabile */}
+                        <span className="info-icon">ⓘ</span>
+                      </div>
+                    </div>
+
+                    <div className="exercise-buttons-group">
+                      {ex.suggerimento && (
+                        <motion.button
+                          onClick={() => setPopupSuggestion(ex.suggerimento)}
+                          disabled={isAnyTimerActive} // Disabilita YouTube se un timer è attivo
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className={`exercise-button youtube-button ${isAnyTimerActive ? "disabled" : ""}`}
+                        >
+                          YouTube
+                        </motion.button>
+                      )}
+
+                      {!isFinished && ( // Mostra il pulsante di azione principale solo se l'esercizio non è finito
+                        <motion.button
+                          onClick={() => handlePrimaryAction(currentWeek, wi, ei, ex)}
+                          // Disabilita se un altro timer è attivo, ma non disabilitare se è il timer di QUEST'esercizio
+                          disabled={isAnyTimerActive && !isTimerRunningForThisExercise}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className={`exercise-button ${isAnyTimerActive && !isTimerRunningForThisExercise ? "disabled" : ""} ${isTimerRunningForThisExercise ? "timer-active" : ""}`}
+                        >
+                          {/* Logica del testo del pulsante basata sullo stato */}
+                          {seriesDone === 0 && "Inizia Serie 1"}
+                          {seriesDone > 0 && seriesDone < ex.serie && !isTimerRunningForThisExercise && `Completa Serie ${seriesDone} / Pausa (${ex.pausa}s)`}
+                          {isTimerRunningForThisExercise && `Salta Pausa (${timer.seconds}s)`}
+                          {seriesDone === ex.serie && !isFinished && "Registra Fine"}
+                        </motion.button>
+                      )}
+                      {isFinished && ( // Se l'esercizio è completato, mostra solo lo stato
+                        <motion.button className="exercise-button disabled" disabled>
+                          ✔ Completato
+                        </motion.button>
+                      )}
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Popup Suggerimento YouTube: Mostrato quando l'utente clicca sul pulsante "YouTube". */}
+        <AnimatePresence>
+          {popupSuggestion && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="popup-overlay"
+            >
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.8, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="popup-content"
+              >
+                <h3>Suggerimento Video</h3>
+                <p>{popupSuggestion}</p>
+                <a href={getYoutubeLink(popupSuggestion)} target="_blank" rel="noopener noreferrer" className="popup-link">
+                  Cerca su YouTube
+                </a>
+                <motion.button
+                  onClick={() => setPopupSuggestion(null)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="popup-button-close"
+                >
+                  Chiudi
+                </motion.button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Nuovo Popup Dettagli Esercizio */}
+        <AnimatePresence>
+          {showExerciseDetailsPopup && selectedExerciseForDetails && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="popup-overlay"
+            >
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.8, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="popup-content"
+              >
+                <h3>Dettagli Esercizio: {selectedExerciseForDetails.nome}</h3>
+                <p><strong>Posizionamento Fascia:</strong> {selectedExerciseForDetails.bandPlacement}</p>
+                <p><strong>Suggerimento Fascia:</strong> {selectedExerciseForDetails.bandSuggestionDetail}</p>
+                <motion.button
+                  onClick={() => {
+                    setShowExerciseDetailsPopup(false);
+                    setSelectedExerciseForDetails(null);
+                  }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="popup-button-close"
+                >
+                  Chiudi
+                </motion.button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Popup Pausa Terminata (mostrato solo alla fine del timer) */}
+        <AnimatePresence>
+          {showBreakEndPopup && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="popup-overlay"
+            >
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.8, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="popup-content"
+              >
+                <h3>Tempo scaduto!</h3>
+                <p>La tua pausa per "{timer.exerciseName}" è terminata. Riprendi l'allenamento!</p>
+                <motion.button
+                  onClick={() => {
+                    setShowBreakEndPopup(false);
+                    setTimer(prev => ({ ...prev, workoutKey: null, pauseDuration: 0, exerciseName: '' }));
+                  }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="popup-break-end-button"
+                >
+                  Continua Allenamento
+                </motion.button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </>
+  );
+};
+
+export default Program;
