@@ -12,9 +12,10 @@ const firebaseConfig = {
   appId: "1:629036677717:web:e8fbde76512fc2f1b232dc"
 };
 
-// Inizializza Firebase solo una volta
+// Inizializza Firebase solo una volta per evitare errori di re-inizializzazione
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-// Esporta auth e db
+// Esporta le istanze di auth e db per usarle nell'applicazione
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+
