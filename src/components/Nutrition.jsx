@@ -159,8 +159,29 @@ const Nutrition = ({ setCurrentView }) => {
       <style>{`
          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
          :root { --primary: #0066ff; --primary-dark: #004cbb; --secondary: #ff6b00; --accent: #00e080; --dark: #121826; --light: #ffffff; --gray: #e0e6f0; --shadow-md: 0 10px 25px rgba(0, 102, 255, 0.2); --shadow-lg: 0 20px 40px rgba(0, 102, 255, 0.25); --border: 1px solid rgba(0, 102, 255, 0.2); --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); --radius-lg: 2rem; --radius-md: 1.25rem; --radius-sm: 0.75rem; }
-         body { margin: 0; font-family: 'Poppins', sans-serif; color: var(--light); background: linear-gradient(135deg, #0f1b3a 0%, #1a365d 50%, #0066ff 100%); min-height: 100vh; background-attachment: fixed; overflow-x: hidden;  overscroll-behavior: contain; -webkit-user-select: none; user-select: none; }
-         .nutrition-container { min-height: 100vh; padding: 1.5rem; display: flex; flex-direction: column; align-items: center; position: relative; }
+         
+         /* OTTIMIZZAZIONE SCROLL: Lo scroll verticale è ora gestito dal body per un'esperienza più fluida */
+         body { 
+            margin: 0; 
+            font-family: 'Poppins', sans-serif; 
+            color: var(--light); 
+            background: linear-gradient(135deg, #0f1b3a 0%, #1a365d 50%, #0066ff 100%); 
+            min-height: 100%; 
+            background-attachment: fixed; 
+            overflow-x: hidden; 
+            -webkit-user-select: none; 
+            user-select: none; 
+         }
+
+         /* Il container si adatta al contenuto, non forza più l'altezza dello schermo */
+         .nutrition-container { 
+            padding: 1.5rem; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            position: relative; 
+         }
+
          .nutrition-header { width: 100%; max-width: 1200px; margin-bottom: 2.5rem; padding: 1.8rem 2.5rem; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); border: var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem; }
          .welcome-title { font-size: 2.2rem; font-weight: 800; margin: 0; }
          .back-button { padding: 0.75rem 1.75rem; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; font-weight: 700; border: none; border-radius: var(--radius-md); cursor: pointer; box-shadow: 0 6px 16px rgba(0, 102, 255, 0.3); transition: var(--transition); text-transform: uppercase; }
@@ -168,7 +189,13 @@ const Nutrition = ({ setCurrentView }) => {
          .tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; width: 100%; max-width: 1000px; justify-content: center; }
          .tab { padding: 0.8rem 1.5rem; background: rgba(255, 255, 255, 0.1); color: var(--gray); border: none; border-radius: var(--radius-md) var(--radius-md) 0 0; cursor: pointer; font-weight: 600; transition: var(--transition); }
          .tab.active { background: var(--primary); color: white; }
-         .main-content-wrapper { width: 100%; max-width: 1000px; flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 1rem; box-sizing: border-box; }
+
+         /* OTTIMIZZAZIONE SCROLL: Rimosse le regole di scroll da questo wrapper */
+         .main-content-wrapper { 
+            width: 100%; 
+            max-width: 1000px; 
+         }
+
          .main-content-tab { width: 100%; display: flex; flex-direction: column; align-items: center; padding-top: 1px; padding-bottom: 1px; }
          .horizontal-scroll-wrapper { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; width: 100%; padding-bottom: 0.5rem; scrollbar-width: none; }
          .horizontal-scroll-wrapper::-webkit-scrollbar { display: none; }
@@ -207,8 +234,32 @@ const Nutrition = ({ setCurrentView }) => {
          .modal-macros { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); text-align: center; }
          .modal-macros h4 { margin: 0 0 0.8rem 0; color: var(--secondary); }
          .modal-macros-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem 1rem; color: var(--light); }
-         @media (min-width: 769px) { body { overflow-y: auto; overflow-x: hidden; } .main-content-wrapper { overflow-y: visible; flex: none; } .horizontal-scroll-wrapper { display: block; overflow-x: visible; scroll-snap-type: none; } .horizontal-scroll-wrapper > .section-card { width: 100%; margin: 0 auto 2rem auto; } .scroll-hint-container { display: none; } }
-         @media (max-width: 768px) { body { overflow: hidden; } .welcome-title { font-size: 1.8rem; text-align: center; width: 100%; } .back-button { width: 100%; } .tabs { flex-wrap: wrap; } .tab { flex: 1; text-align: center; } .section-title { font-size: 1.5rem; } .btn-calculate { align-self: stretch; } .horizontal-scroll-wrapper > .section-card { width: calc(100% - 1rem); margin: 0 0.5rem; padding: 1.5rem; } }
+         
+         /* OTTIMIZZAZIONE SCROLL: Le card non sono più scrollabili orizzontalmente su desktop */
+         @media (min-width: 769px) { 
+            .horizontal-scroll-wrapper { 
+                display: block; 
+                overflow-x: visible; 
+                scroll-snap-type: none; 
+            } 
+            .horizontal-scroll-wrapper > .section-card { 
+                width: 100%; 
+                margin: 0 auto 2rem auto; 
+            } 
+            .scroll-hint-container { 
+                display: none; 
+            } 
+         }
+
+         @media (max-width: 768px) { 
+            .welcome-title { font-size: 1.8rem; text-align: center; width: 100%; } 
+            .back-button { width: 100%; } 
+            .tabs { flex-wrap: wrap; } 
+            .tab { flex: 1; text-align: center; } 
+            .section-title { font-size: 1.5rem; } 
+            .btn-calculate { align-self: stretch; } 
+            .horizontal-scroll-wrapper > .section-card { width: calc(100% - 1rem); margin: 0 0.5rem; padding: 1.5rem; } 
+         }
       `}</style>
 
       <div className="nutrition-container">
