@@ -160,7 +160,6 @@ const Nutrition = ({ setCurrentView }) => {
          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
          :root { --primary: #0066ff; --primary-dark: #004cbb; --secondary: #ff6b00; --accent: #00e080; --dark: #121826; --light: #ffffff; --gray: #e0e6f0; --shadow-md: 0 10px 25px rgba(0, 102, 255, 0.2); --shadow-lg: 0 20px 40px rgba(0, 102, 255, 0.25); --border: 1px solid rgba(0, 102, 255, 0.2); --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); --radius-lg: 2rem; --radius-md: 1.25rem; --radius-sm: 0.75rem; }
          
-         /* OTTIMIZZAZIONE SCROLL: Lo scroll verticale è ora gestito dal body per un'esperienza più fluida */
          body { 
             margin: 0; 
             font-family: 'Poppins', sans-serif; 
@@ -173,7 +172,6 @@ const Nutrition = ({ setCurrentView }) => {
             user-select: none; 
          }
 
-         /* Il container si adatta al contenuto, non forza più l'altezza dello schermo */
          .nutrition-container { 
             padding: 1.5rem; 
             display: flex; 
@@ -190,7 +188,6 @@ const Nutrition = ({ setCurrentView }) => {
          .tab { padding: 0.8rem 1.5rem; background: rgba(255, 255, 255, 0.1); color: var(--gray); border: none; border-radius: var(--radius-md) var(--radius-md) 0 0; cursor: pointer; font-weight: 600; transition: var(--transition); }
          .tab.active { background: var(--primary); color: white; }
 
-         /* OTTIMIZZAZIONE SCROLL: Rimosse le regole di scroll da questo wrapper */
          .main-content-wrapper { 
             width: 100%; 
             max-width: 1000px; 
@@ -235,7 +232,6 @@ const Nutrition = ({ setCurrentView }) => {
          .modal-macros h4 { margin: 0 0 0.8rem 0; color: var(--secondary); }
          .modal-macros-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem 1rem; color: var(--light); }
          
-         /* OTTIMIZZAZIONE SCROLL: Le card non sono più scrollabili orizzontalmente su desktop */
          @media (min-width: 769px) { 
             .horizontal-scroll-wrapper { 
                 display: block; 
