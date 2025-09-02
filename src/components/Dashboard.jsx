@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { auth } from "../firebaseConfig";
-import { signOut } from "firebase/auth";
 
 const Dashboard = ({ setCurrentView }) => {
   const [userName, setUserName] = useState("Utente");
@@ -20,32 +18,30 @@ const Dashboard = ({ setCurrentView }) => {
   ][Math.floor(Math.random() * 10)]);
 
   useEffect(() => {
-    const user = auth?.currentUser;
-    if (user) {
-      setUserName(user.displayName || user.email?.split("@")[0] || "Utente");
-    }
+    // I dati utente sono simulati poiché la configurazione di Firebase non è presente.
+    const mockUser = {
+        displayName: "Atleta",
+        email: "atleta@moveup.com"
+    };
+    setUserName(mockUser.displayName || mockUser.email?.split("@")[0] || "Utente");
 
-    // Formatta data corrente: "Lunedì, 23 Settembre 2024"
     const today = new Date();
     const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
     const formattedDate = today.toLocaleDateString('it-IT', options).replace(/^\w/, (c) => c.toUpperCase());
     setCurrentDate(formattedDate);
   }, []);
 
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      setCurrentView("login");
-    } catch (error) {
-      console.error("Errore durante il logout:", error);
-    }
+  const handleLogout = () => {
+    // La funzione di logout ora reindirizza semplicemente alla vista di login.
+    console.log("Logout richiesto.");
+    setCurrentView("login");
   };
 
-  const buttonEmojis = {
-    motivation: "💪",
-    nutrition: "🥗",
-    workoutDetail: "🏋️‍♀️",
-  };
+  const buttonsData = [
+    { label: "Motivazione", view: "motivation", cls: "button-motivation", emoji: "💪", description: "Trova la carica e scopri la filosofia del nostro approccio." },
+    { label: "Nutrizione", view: "nutrition", cls: "button-nutrition", emoji: "🥗", description: "Calcola il tuo fabbisogno e scopri idee per i tuoi pasti." },
+    { label: "Dettaglio Allenamenti", view: "workoutDetail", cls: "button-workout-detail", emoji: "🏋️‍♀️", description: "Esplora ogni esercizio del programma con video e guide." },
+  ];
 
   return (
     <>
@@ -247,7 +243,7 @@ const Dashboard = ({ setCurrentView }) => {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.8rem;
           }
 
           .start-workout-button::before {
@@ -276,7 +272,7 @@ const Dashboard = ({ setCurrentView }) => {
 
           .buttons-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.75rem;
             width: 100%;
             max-width: 1200px;
@@ -286,9 +282,7 @@ const Dashboard = ({ setCurrentView }) => {
           .dashboard-button {
             padding: 1.6rem 1.3rem;
             border-radius: var(--radius-md);
-            font-weight: 700;
             color: white;
-            font-size: 1.15rem;
             border: none;
             cursor: pointer;
             display: flex;
@@ -300,6 +294,7 @@ const Dashboard = ({ setCurrentView }) => {
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
             position: relative;
             overflow: hidden;
+            text-align: center;
           }
 
           .dashboard-button::before {
@@ -336,7 +331,24 @@ const Dashboard = ({ setCurrentView }) => {
 
           .button-label {
             font-size: 1.2rem;
-            font-weight: 600;
+            font-weight: 700;
+          }
+
+          .button-description {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: var(--gray);
+            line-height: 1.4;
+            padding: 0 0.5rem;
+            margin-top: 0.4rem;
+            min-height: 40px; /* Assicura altezza uniforme */
+          }
+
+          .start-workout-button .button-description {
+            font-size: 1rem;
+            font-weight: 500;
+            text-transform: none;
+            min-height: 0;
           }
         `}
       </style>
@@ -388,20 +400,17 @@ const Dashboard = ({ setCurrentView }) => {
         >
           <span className="workout-emoji">🔥</span>
           <span>INIZIA AD ALLENARTI</span>
+          <span className="button-description">Vai al programma di 12 settimane e traccia i tuoi progressi.</span>
         </motion.button>
 
-        {/* Griglia pulsanti (senza "Programmi") */}
+        {/* Griglia pulsanti */}
         <motion.div
           initial={{ y: 40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.7, duration: 0.8 }}
           className="buttons-grid"
         >
-          {[
-            { label: "Motivazione", view: "motivation", cls: "button-motivation" },
-            { label: "Nutrizione", view: "nutrition", cls: "button-nutrition" },
-            { label: "Dettaglio Allenamenti", view: "workoutDetail", cls: "button-workout-detail" },
-          ].map((btn, index) => (
+          {buttonsData.map((btn, index) => (
             <motion.button
               key={btn.view}
               onClick={() => setCurrentView(btn.view)}
@@ -412,8 +421,9 @@ const Dashboard = ({ setCurrentView }) => {
               whileTap={{ scale: 0.98 }}
               className={`dashboard-button ${btn.cls}`}
             >
-              <span className="button-emoji">{buttonEmojis[btn.view]}</span>
+              <span className="button-emoji">{btn.emoji}</span>
               <span className="button-label">{btn.label}</span>
+              <span className="button-description">{btn.description}</span>
             </motion.button>
           ))}
         </motion.div>
