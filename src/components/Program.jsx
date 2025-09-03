@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // --- Dati Statici del Programma ---
@@ -696,7 +696,7 @@ const Program = ({ setCurrentView }) => {
     };
   }, [timer.active, timer.seconds]);
 
-  useEffect(() => {
+  useLayoutEffect(() => { // Changed to useLayoutEffect to fix centering scroll on mobile
     if (weekButtonsContainerRef.current) {
       const activeWeekButton = weekButtonsContainerRef.current.querySelector('.week-button.active');
       if (activeWeekButton) {
@@ -1085,12 +1085,7 @@ const Program = ({ setCurrentView }) => {
             max-width: 1200px;
             overflow-x: auto;
             margin-bottom: 2.5rem;
-            /* Flex fallback per browser più vecchi */
-            display: flex;
-            justify-content: center;
-            /* Grid per un centraggio perfetto */
-            display: grid;
-            place-items: center;
+            /* Removed grid layout which caused centering issues on mobile */
             scrollbar-width: thin;
             scrollbar-color: var(--secondary) transparent;
           }
@@ -1109,8 +1104,9 @@ const Program = ({ setCurrentView }) => {
           .week-buttons-wrapper {
             display: flex;
             gap: 1.2rem;
-            padding: 0.8rem 1.5rem;
+            padding: 0.8rem 24px; /* Added padding so buttons don't touch edges */
             min-width: fit-content;
+            justify-content: flex-start; /* Let JS handle centering */
           }
 
           .week-button {
@@ -1701,3 +1697,4 @@ const Program = ({ setCurrentView }) => {
 };
 
 export default Program;
+
