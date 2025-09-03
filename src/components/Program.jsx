@@ -11,28 +11,59 @@ const fasce = {
   nera: { peso: "18,16 kg", emoji: "⚫" },
 };
 
-// Elenco degli esercizi di riscaldamento consigliati.
-const warmUpExercises = [
-  "Jumping Jack (leggeri) – 1 min",
-  "Cerchi con le braccia – 30 sec avanti / 30 sec indietro",
-  "World’s Greatest Stretch – 30 sec per lato",
-  "Bodyweight Squat – 10 rip",
-  "Swing della gamba (laterale e posteriore) – 10x per gamba",
-  "Glute Bridge con fascia verde – 10 rip (per attivare i glutei)",
+// Elenco degli esercizi di riscaldamento con descrizione.
+const warmUpExercisesData = [
+    {
+        name: "Jumping Jack (leggeri) – 1 min",
+        description: "Inizia in piedi con i piedi uniti e le braccia lungo i fianchi. Salta divaricando le gambe alla larghezza delle spalle e contemporaneamente porta le braccia sopra la testa. Ritorna alla posizione di partenza con un altro salto. Mantieni un ritmo leggero e costante per attivare il sistema cardiovascolare.",
+    },
+    {
+        name: "Cerchi con le braccia – 30 sec avanti / 30 sec indietro",
+        description: "Stai in piedi con i piedi alla larghezza delle spalle e le braccia estese ai lati, parallele al pavimento. Esegui piccoli cerchi controllati in avanti per 30 secondi, poi inverti il movimento eseguendo cerchi all'indietro per altri 30 secondi. Aumenta gradualmente l'ampiezza dei cerchi.",
+    },
+    {
+        name: "World’s Greatest Stretch – 30 sec per lato",
+        description: "Fai un passo avanti in una posizione di affondo. Piega il busto e appoggia la mano opposta alla gamba anteriore a terra. L'altra mano va vicino al piede. Ruota il busto verso la gamba anteriore, portando il braccio verso il soffitto. Mantieni la posizione per qualche secondo e ripeti dall'altro lato.",
+    },
+    {
+        name: "Bodyweight Squat – 10 rip",
+        description: "Stai in piedi con i piedi alla larghezza delle spalle. Abbassa i fianchi come se ti stessi sedendo su una sedia, mantenendo il petto alto e la schiena dritta. Scendi finché le cosce non sono parallele al suolo (o fin dove riesci comodamente), poi torna in piedi. Esegui 10 ripetizioni controllate.",
+    },
+    {
+        name: "Swing della gamba (laterale e posteriore) – 10x per gamba",
+        description: "Appoggiati a un muro o a un supporto stabile. Dondola una gamba avanti e indietro in modo controllato per 10 volte. Poi, girati di 90 gradi e dondola la stessa gamba lateralmente (da un lato all'altro) per 10 volte. Ripeti con l'altra gamba.",
+    },
+    {
+        name: "Glute Bridge con fascia verde – 10 rip (per attivare i glutei)",
+        description: "Sdraiati sulla schiena con le ginocchia piegate e i piedi appoggiati a terra. Posiziona una fascia elastica leggera appena sopra le ginocchia. Spingi le ginocchia verso l'esterno contro la resistenza della fascia e solleva i fianchi verso il soffitto, contraendo i glutei. Mantieni la posizione per un secondo e abbassa lentamente.",
+    },
 ];
 
-// Elenco degli esercizi di defaticamento consigliati.
-const coolDownExercises = [
-  "Allungamento quadricipiti – 30 sec per gamba",
-  "Allungamento flessori (hamstring) – 30 sec per gamba",
-  "Piriforme stretch (in posizione incrociata) – 30 sec per lato",
-  "Cat-Cow (micio-mucca) – 1 min",
-  "Respirazione consapevole (addominale) – 1 min",
+// Elenco degli esercizi di defaticamento con descrizione.
+const coolDownExercisesData = [
+    {
+        name: "Allungamento quadricipiti – 30 sec per gamba",
+        description: "In piedi, appoggiati a un supporto se necessario. Afferra la caviglia destra con la mano destra e tira delicatamente il tallone verso il gluteo, mantenendo le ginocchia vicine. Dovresti sentire un allungamento nella parte anteriore della coscia. Mantieni per 30 secondi e cambia gamba.",
+    },
+    {
+        name: "Allungamento flessori (hamstring) – 30 sec per gamba",
+        description: "Siediti a terra con una gamba distesa davanti a te. Piega l'altra gamba portando la pianta del piede contro l'interno coscia della gamba distesa. Piegati lentamente in avanti verso la punta del piede della gamba distesa fino a sentire un allungamento. Mantieni per 30 secondi e cambia lato.",
+    },
+    {
+        name: "Piriforme stretch (in posizione incrociata) – 30 sec per lato",
+        description: "Sdraiati sulla schiena con le ginocchia piegate. Accavalla la caviglia destra sul ginocchio sinistro. Afferra la coscia sinistra con entrambe le mani e tira delicatamente verso il petto fino a sentire un allungamento nel gluteo destro. Mantieni per 30 secondi e cambia lato.",
+    },
+    {
+        name: "Cat-Cow (micio-mucca) – 1 min",
+        description: "Mettiti a quattro zampe con le mani sotto le spalle e le ginocchia sotto i fianchi. Inspira, inarca la schiena portando la pancia verso il basso e guarda in alto (posizione della mucca). Espira, arrotonda la colonna vertebrale verso il soffitto e guarda verso l'ombelico (posizione del gatto). Alterna i due movimenti lentamente per un minuto.",
+    },
+    {
+        name: "Respirazione consapevole (addominale) – 1 min",
+        description: "Siediti o sdraiati in una posizione comoda. Chiudi gli occhi e appoggia una mano sulla pancia. Inspira lentamente dal naso, sentendo la pancia che si gonfia. Espira lentamente dalla bocca, sentendo la pancia che si sgonfia. Concentrati solo sul tuo respiro per un minuto.",
+    },
 ];
 
 // Funzione per generare l'intero programma di allenamento di 12 settimane.
-// La logica è divisa in 3 fasi (4 settimane ciascuna), con progressione degli esercizi.
-// Ho aggiunto suggerimenti dettagliati sul posizionamento della fascia e sulla scelta del peso.
 const generateProgramData = () => {
   const allWeeks = [];
 
@@ -541,6 +572,7 @@ const ExerciseControlPopup = ({
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
       className="popup-overlay"
+      onClick={onClose}
     >
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
@@ -548,6 +580,7 @@ const ExerciseControlPopup = ({
         exit={{ scale: 0.8, opacity: 0 }}
         transition={{ duration: 0.3 }}
         className="popup-content exercise-control-popup"
+        onClick={(e) => e.stopPropagation()} // Impedisce la chiusura cliccando all'interno del popup
       >
         <h3>{exercise.nome}</h3>
         <p className="exercise-popup-details">
@@ -599,10 +632,9 @@ const ExerciseControlPopup = ({
               href={getYoutubeLink(exercise.suggerimento)}
               target="_blank"
               rel="noopener noreferrer"
-              disabled={isTimerRunningForThisExercise}
               whileHover={{ scale: 1.05, boxShadow: '0 6px 20px rgba(230, 0, 0, 0.5)' }}
               whileTap={{ scale: 0.95 }}
-              className={`exercise-button youtube-button ${isTimerRunningForThisExercise ? "disabled" : ""}`}
+              className={`exercise-button youtube-button`}
             >
               Guarda Video su YouTube
             </motion.a>
@@ -622,68 +654,38 @@ const ExerciseControlPopup = ({
   );
 };
 
-
 // --- Componente Program ---
-// Questo componente gestisce la visualizzazione e l'interazione con il programma di allenamento.
-const Program = ({ setCurrentView, showMessage }) => {
-  // Stato per tenere traccia dello stato di completamento di ogni esercizio.
-  // La chiave è una stringa unica (es. 'w0_a0_e0') e il valore un oggetto { completedSeriesCount, isFinished, hasStartedCurrentSeries }.
+const Program = ({ setCurrentView }) => {
   const [completed, setCompleted] = useState({});
-  // Stato per tenere traccia della settimana di allenamento corrente visualizzata.
   const [currentWeek, setCurrentWeek] = useState(0);
-  // Stato per mostrare il popup con i dettagli e il suggerimento YouTube per un esercizio.
-  const [exerciseDetailsPopup, setExerciseDetailsPopup] = useState(null); // Rinominato per chiarezza
-  // Stato per gestire l'espansione delle sezioni nella panoramica del programma (es. Riscaldamento, Defaticamento).
+  const [exerciseDetailsPopup, setExerciseDetailsPopup] = useState(null);
   const [expandedSection, setExpandedSection] = useState(null);
-
-  // Nuovo stato per l'esercizio attualmente controllato dal popup interattivo
   const [activeExerciseInPopup, setActiveExerciseInPopup] = useState(null);
   const [activeExerciseKeyInPopup, setActiveExerciseKeyInPopup] = useState(null);
+  const [infoPopupContent, setInfoPopupContent] = useState(null); // Stato per il popup di riscaldamento/defaticamento
 
-
-  // Riferimento per il contenitore dei pulsanti delle settimane per lo scroll automatico.
   const weekButtonsContainerRef = useRef(null);
 
-  // --- Stato e Riferimenti per il Timer della Pausa ---
   const [timer, setTimer] = useState({
     active: false,
     seconds: 0,
-    workoutKey: null, // Chiave dell'esercizio che ha attivato il timer
-    pauseDuration: 0, // Durata iniziale della pausa per il popup finale
-    exerciseName: '', // Nome dell'esercizio per il popup
+    workoutKey: null,
+    pauseDuration: 0,
+    exerciseName: '',
   });
-  const [showBreakEndPopup, setShowBreakEndPopup] = useState(false); // Stato per il popup "pausa terminata"
-  const timerRef = useRef(null); // Riferimento per il setInterval
-  const audioContextRef = useRef(null); // Riferimento per l'AudioContext
-
-
-  // Inizializza AudioContext una sola volta all'inizio
-  useEffect(() => {
-    if (!audioContextRef.current) {
-      audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
-    }
-  }, []);
-
-  // Funzione per riprodurre un semplice beep (RIMOSSA)
-  const playBeep = (frequency, duration, type) => {
-    // console.warn("AudioContext non inizializzato. Impossibile riprodurre il suono.");
-    return; // Non riproduce alcun suono
-  };
-
-  // Logica del timer della pausa
+  const [showBreakEndPopup, setShowBreakEndPopup] = useState(false);
+  const timerRef = useRef(null);
+  
   useEffect(() => {
     if (timer.active && timer.seconds > 0) {
       timerRef.current = setInterval(() => {
         setTimer(prev => ({ ...prev, seconds: prev.seconds - 1 }));
       }, 1000);
     } else if (timer.active && timer.seconds === 0) {
-      // Timer terminato
       clearInterval(timerRef.current);
       setShowBreakEndPopup(true);
-      // Resetta lo stato del timer, ma manteniamo la chiave dell'esercizio per il popup finale
       setTimer(prev => ({ ...prev, active: false }));
     } else if (!timer.active && timerRef.current) {
-      // Timer interrotto esternamente o non attivo, pulisci l'intervallo
       clearInterval(timerRef.current);
     }
 
@@ -692,9 +694,8 @@ const Program = ({ setCurrentView, showMessage }) => {
         clearInterval(timerRef.current);
       }
     };
-  }, [timer.active, timer.seconds]); // Dipende dallo stato 'active' e dai 'seconds' del timer
+  }, [timer.active, timer.seconds]);
 
-  // Effetto per lo scroll automatico delle settimane
   useEffect(() => {
     if (weekButtonsContainerRef.current) {
       const activeWeekButton = weekButtonsContainerRef.current.querySelector('.week-button.active');
@@ -702,30 +703,24 @@ const Program = ({ setCurrentView, showMessage }) => {
         activeWeekButton.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
       }
     }
-  }, [currentWeek]); // Dipende dalla settimana corrente
+  }, [currentWeek]);
 
-  // --- Funzioni di Gestione Esercizi ---
-
-  // Funzione per iniziare una serie per un dato esercizio e aprire il popup di controllo.
   const handleStartSeries = (weekIdx, workoutIdx, exerciseIdx, exercise) => {
     const key = `w${weekIdx}_a${workoutIdx}_e${exerciseIdx}`;
     setCompleted(prev => ({
       ...prev,
-      [key]: { completedSeriesCount: 0, isFinished: false, hasStartedCurrentSeries: true }
+      [key]: { completedSeriesCount: prev[key]?.completedSeriesCount || 0, isFinished: false, hasStartedCurrentSeries: true }
     }));
     setActiveExerciseInPopup(exercise);
     setActiveExerciseKeyInPopup(key);
   };
 
-  // Funzione per completare una serie per un dato esercizio e gestire la pausa.
   const handleCompleteSeries = (exercise) => {
-    const key = activeExerciseKeyInPopup; // Usa la chiave dell'esercizio attivo nel popup
-    const currentProgress = completed[key] || { completedSeriesCount: 0, isFinished: false, hasStartedCurrentSeries: false };
-    let { completedSeriesCount } = currentProgress;
+    const key = activeExerciseKeyInPopup;
+    const currentProgress = completed[key] || { completedSeriesCount: 0 };
     const { serie: totalSeries, pausa, nome: exerciseName } = exercise;
 
-    // Incrementa il conteggio delle serie completate
-    const newCompletedSeriesCount = completedSeriesCount + 1;
+    const newCompletedSeriesCount = currentProgress.completedSeriesCount + 1;
     const newIsFinished = newCompletedSeriesCount === totalSeries;
 
     setCompleted(prev => ({
@@ -737,8 +732,7 @@ const Program = ({ setCurrentView, showMessage }) => {
       }
     }));
 
-    // Se non è l'ultima serie *e* è definita una pausa, avvia il timer.
-    if (newCompletedSeriesCount < totalSeries && pausa > 0) {
+    if (!newIsFinished && pausa > 0) {
       setTimer({
         active: true,
         seconds: pausa,
@@ -749,58 +743,60 @@ const Program = ({ setCurrentView, showMessage }) => {
     }
   };
 
-  // Funzione per terminare un esercizio (anche se non tutte le serie sono state completate)
-  const handleFinishExercise = (exercise) => {
+  const handleFinishExercise = () => {
     const key = activeExerciseKeyInPopup;
     setCompleted(prev => ({
       ...prev,
       [key]: {
         ...prev[key],
         isFinished: true,
-        hasStartedCurrentSeries: false, // Assicurati che non sia più considerato "in corso"
+        hasStartedCurrentSeries: false,
       }
     }));
     setActiveExerciseInPopup(null);
     setActiveExerciseKeyInPopup(null);
-    setTimer(prev => ({ ...prev, active: false, workoutKey: null })); // Ferma il timer se attivo
+    setTimer(prev => ({ ...prev, active: false, workoutKey: null }));
   };
 
-
-  // Funzione per saltare la pausa corrente.
   const skipBreak = () => {
     if (timerRef.current) {
-      clearInterval(timerRef.current); // Ferma il timer
+      clearInterval(timerRef.current);
     }
-    setShowBreakEndPopup(true); // Mostra il popup "Pausa Terminata"
-    setTimer(prev => ({ ...prev, active: false, seconds: 0 })); // Disattiva il timer
+    setShowBreakEndPopup(true);
+    setTimer(prev => ({ ...prev, active: false, seconds: 0 }));
   };
 
-  // Genera il link di ricerca su YouTube per un dato suggerimento.
   const getYoutubeLink = (suggestion) => {
     const searchTerms = suggestion.replace(/YouTube:\s*/i, "").trim();
     return `https://www.youtube.com/results?search_query=${encodeURIComponent(searchTerms)}`;
   };
 
-  // Funzione per espandere o collassare le sezioni della panoramica.
   const toggleSection = (sectionName) => {
     setExpandedSection(expandedSection === sectionName ? null : sectionName);
   };
+  
+  const overviewSections = [
+        { title: "1️⃣ Introduzione", content: "Benvenuta nel tuo percorso di trasformazione di 12 settimane! Questo programma è stato creato per aiutarti a costruire forza, resistenza e a raggiungere i tuoi obiettivi di fitness, il tutto utilizzando le pratiche fasce elastiche. Preparati a sfidare il tuo corpo e a vedere risultati reali!" },
+        { title: "2️⃣ Guida alle Fasce Elastiche", content: "Le fasce elastiche sono il tuo strumento segreto per un allenamento efficace. Il programma utilizza fasce ad anello chiuso da 60 cm, disponibili in diversi livelli di resistenza. Ogni colore corrisponde a un peso (verde: 2,27 kg; blu: 4,54 kg; gialla: 9,07 kg; rossa: 13,62 kg; nera: 18,16 kg). Utilizzarle correttamente ti garantirà il massimo beneficio per ogni esercizio! Ricorda che per alcuni esercizi che coinvolgono spinte verticali con carichi molto elevati (come la Military Press), le fasce da 60 cm potrebbero non essere ottimali come le fasce tubolari con maniglie, ma possono essere comunque utilizzate con il giusto posizionamento sotto i piedi." },
+        { title: "3️⃣ Struttura del Programma", content: "Il programma è strategicamente diviso in 3 fasi da 4 settimane ciascuna. Ogni fase è progettata per progredire in termini di intensità e complessità, assicurandoti di costruire una base solida e di avanzare costantemente verso i tuoi obiettivi. Segui la progressione per massimizzare i risultati e prevenire stalli." },
+        { title: "4️⃣ Riscaldamento", type: 'warmup' },
+        { title: "5️⃣ Defaticamento", type: 'cooldown' },
+  ];
 
   return (
     <>
-      {/* Stili CSS globali e specifici del componente. Utilizza variabili CSS per coerenza e facilità di modifica. */}
       <style>
         {`
           @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
-          
+         
           :root {
-            --primary: #0066ff; /* Blu principale */
-            --primary-dark: #004cbb; /* Blu scuro */
-            --secondary: #ff6b00; /* Arancione (per timer) */
-            --accent: #00e080; /* Verde brillante (per accenti e completato) */
-            --dark: #121826; /* Sfondo scuro */
-            --light: #ffffff; /* Testo chiaro */
-            --gray: #e0e6f0; /* Grigio chiaro */
+            --primary: #0066ff;
+            --primary-dark: #004cbb;
+            --secondary: #ff6b00;
+            --accent: #00e080;
+            --dark: #121826;
+            --light: #ffffff;
+            --gray: #e0e6f0;
             --shadow-sm: 0 4px 12px rgba(0, 102, 255, 0.16);
             --shadow-md: 0 10px 25px rgba(0, 102, 255, 0.2);
             --shadow-lg: 0 20px 40px rgba(0, 102, 255, 0.25);
@@ -815,7 +811,7 @@ const Program = ({ setCurrentView, showMessage }) => {
             margin: 0;
             font-family: 'Poppins', sans-serif;
             color: var(--light);
-            background: linear-gradient(135deg, #0f1b3a 0%, #1a365d 50%, #0066ff 100%); /* Sfondo scuro e dinamico */
+            background: linear-gradient(135deg, #0f1b3a 0%, #1a365d 50%, #0066ff 100%);
             min-height: 100vh;
             background-attachment: fixed;
             overflow-x: hidden;
@@ -830,7 +826,6 @@ const Program = ({ setCurrentView, showMessage }) => {
             position: relative;
           }
 
-          /* Effetto pattern di sfondo */
           .program-container::before {
             content: '';
             position: fixed;
@@ -847,8 +842,8 @@ const Program = ({ setCurrentView, showMessage }) => {
             max-width: 1200px;
             margin-bottom: 2.5rem;
             padding: 1.8rem 2.5rem;
-            background: rgba(255, 255, 255, 0.15); /* Sfondo semi-trasparente */
-            backdrop-filter: blur(20px); /* Effetto blur forte */
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
             border: var(--border);
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-lg);
@@ -858,10 +853,9 @@ const Program = ({ setCurrentView, showMessage }) => {
             flex-wrap: wrap;
             gap: 1rem;
             position: relative;
-            overflow: hidden; /* Per l'effetto shine */
+            overflow: hidden;
           }
 
-          /* Effetto shine sull'header per un tocco moderno */
           .header-section::after {
             content: '';
             position: absolute;
@@ -882,7 +876,7 @@ const Program = ({ setCurrentView, showMessage }) => {
             font-weight: 900;
             color: var(--light);
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            z-index: 2; /* Assicura che il testo sia sopra lo shine */
+            z-index: 2;
             letter-spacing: -0.5px;
           }
           @media (max-width: 767px) {
@@ -893,14 +887,12 @@ const Program = ({ setCurrentView, showMessage }) => {
             }
           }
 
-          .dashboard-button {
+          .dashboard-button, .progress-button {
             padding: 1rem 2.2rem;
-            background: linear-gradient(135deg, var(--secondary), #cc5a00); /* Arancione energico */
             color: white;
             font-weight: 700;
             border: none;
             border-radius: var(--radius-md);
-            box-shadow: 0 8px 20px rgba(255, 107, 0, 0.4);
             transition: var(--transition);
             cursor: pointer;
             text-transform: uppercase;
@@ -909,44 +901,35 @@ const Program = ({ setCurrentView, showMessage }) => {
             z-index: 2;
           }
 
+          .dashboard-button {
+             background: linear-gradient(135deg, var(--secondary), #cc5a00);
+             box-shadow: 0 8px 20px rgba(255, 107, 0, 0.4);
+          }
           .dashboard-button:hover {
             transform: translateY(-5px) scale(1.04);
             box-shadow: 0 12px 25px rgba(255, 107, 0, 0.5);
           }
-          .dashboard-button:active {
+           .dashboard-button:active {
             transform: translateY(-2px);
           }
-          
-          /* Stile per il pulsante "Info Progressi" */
+         
           .progress-button {
-            padding: 1rem 2.2rem;
-            background: linear-gradient(135deg, var(--accent), #00b368);
-            color: white;
-            font-weight: 700;
-            border: none;
-            border-radius: var(--radius-md);
-            box-shadow: 0 8px 20px rgba(0, 224, 128, 0.4);
-            transition: var(--transition);
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            position: relative;
-            z-index: 2;
+             background: linear-gradient(135deg, var(--accent), #00b368);
+             box-shadow: 0 8px 20px rgba(0, 224, 128, 0.4);
           }
-
           .progress-button:hover {
             transform: translateY(-5px) scale(1.04);
             box-shadow: 0 12px 25px rgba(0, 224, 128, 0.5);
           }
-          .progress-button:active {
+           .progress-button:active {
             transform: translateY(-2px);
           }
 
           .program-overview-card, .workout-card {
             width: 100%;
             max-width: 1200px;
-            background: rgba(255, 255, 255, 0.12); /* Sfondo semi-trasparente */
-            backdrop-filter: blur(16px); /* Blur più forte */
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(16px);
             border: var(--border);
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-md);
@@ -974,11 +957,11 @@ const Program = ({ setCurrentView, showMessage }) => {
             content: '';
             position: absolute;
             left: 50%;
-            bottom: -10px; /* Posiziona la sottolineatura sotto il testo */
+            bottom: -10px;
             transform: translateX(-50%);
             width: 80px;
             height: 5px;
-            background: linear-gradient(90deg, var(--secondary), var(--accent)); /* Sfumatura per la sottolineatura */
+            background: linear-gradient(90deg, var(--secondary), var(--accent));
             border-radius: 10px;
           }
 
@@ -1031,7 +1014,7 @@ const Program = ({ setCurrentView, showMessage }) => {
           }
 
           .section-content ul {
-            list-style: none; /* Rimuove i bullet point predefiniti */
+            list-style: none;
             padding-left: 0;
           }
 
@@ -1040,15 +1023,35 @@ const Program = ({ setCurrentView, showMessage }) => {
             padding-left: 1.8rem;
             margin: 0.6rem 0;
           }
+          
+          .section-content li.clickable-list-item {
+             cursor: pointer;
+             transition: all 0.2s ease-in-out;
+             padding: 0.5rem 0.8rem;
+             border-radius: var(--radius-sm);
+             margin-left: -0.8rem;
+          }
+          
+          .section-content li.clickable-list-item:hover {
+              background-color: rgba(0, 224, 128, 0.15);
+              color: var(--accent);
+              transform: translateX(5px);
+          }
 
           .section-content li::before {
-            content: '•'; /* Aggiunge un bullet point personalizzato */
+            content: '•';
             color: var(--accent);
             font-size: 1.4rem;
             position: absolute;
             left: 0;
-            top: -0.2rem;
+            top: 50%;
+            transform: translateY(-50%);
           }
+          
+           .section-content li.clickable-list-item::before {
+             top: calc(50% + 0.1rem);
+           }
+           
           .section-content p {
             margin-bottom: 1em;
           }
@@ -1056,7 +1059,7 @@ const Program = ({ setCurrentView, showMessage }) => {
             color: var(--accent);
             font-weight: 600;
           }
-          
+         
           .details-hint-message {
             text-align: center;
             font-size: 0.95rem;
@@ -1082,12 +1085,15 @@ const Program = ({ setCurrentView, showMessage }) => {
             max-width: 1200px;
             overflow-x: auto;
             margin-bottom: 2.5rem;
-            padding: 0.5rem 0;
-            scrollbar-width: thin; /* Stile scrollbar Firefox */
+            /* Flex fallback per browser più vecchi */
+            display: flex;
+            justify-content: center;
+            /* Grid per un centraggio perfetto */
+            display: grid;
+            place-items: center;
+            scrollbar-width: thin;
             scrollbar-color: var(--secondary) transparent;
           }
-
-          /* Stile scrollbar Webkit (Chrome, Safari) */
           .week-selector-container::-webkit-scrollbar {
             height: 6px;
           }
@@ -1103,9 +1109,8 @@ const Program = ({ setCurrentView, showMessage }) => {
           .week-buttons-wrapper {
             display: flex;
             gap: 1.2rem;
-            padding: 0.8rem;
+            padding: 0.8rem 1.5rem;
             min-width: fit-content;
-            justify-content: center;
           }
 
           .week-button {
@@ -1125,7 +1130,7 @@ const Program = ({ setCurrentView, showMessage }) => {
           .week-button.active {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
-            box-shadow: 0 0 0 4px rgba(0, 224, 128, 0.3), var(--shadow-sm); /* Anello verde per attivo */
+            box-shadow: 0 0 0 4px rgba(0, 224, 128, 0.3), var(--shadow-sm);
             transform: translateY(-3px) scale(1.05);
             font-weight: 800;
           }
@@ -1153,13 +1158,11 @@ const Program = ({ setCurrentView, showMessage }) => {
             margin-bottom: 0.8rem;
           }
 
-          /* Stile per l'esercizio attivo */
           .exercise-item.active-exercise {
-            border: 2px solid var(--primary); /* Bordo più spesso e colorato */
-            box-shadow: 0 0 15px rgba(0, 102, 255, 0.7); /* Ombra luminosa */
-            transform: scale(1.01); /* Leggera enfasi */
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 102, 255, 0.7);
+            transform: scale(1.01);
           }
-
 
           @media (min-width: 640px) {
             .exercise-item {
@@ -1169,67 +1172,28 @@ const Program = ({ setCurrentView, showMessage }) => {
             }
           }
 
-          .exercise-item:hover:not(.active-exercise) { /* Modificato per non interferire con active-exercise */
+          .exercise-item:hover:not(.active-exercise) {
             background: rgba(255, 255, 255, 0.15);
             transform: translateX(6px);
             border-left: 3px solid var(--accent);
           }
 
-          .exercise-details-clickable-area { /* Nuovo stile per l'area cliccabile */
-            flex-grow: 1; /* Permette di occupare lo spazio disponibile */
+          .exercise-details-clickable-area {
+            flex-grow: 1;
             cursor: pointer;
-            padding: 0.5rem 0; /* Aggiunge un po' di padding per una migliore area di clic */
-            display: flex; /* Permette all'icona di essere inline con il testo */
+            padding: 0.5rem 0;
+            display: flex;
             align-items: center;
-            gap: 0.5rem; /* Spazio tra testo e icona */
-            position: relative; /* Per posizionare la scritta "clicca per dettagli" */
+            gap: 0.5rem;
+            position: relative;
           }
           .exercise-details-clickable-area:hover .exercise-name-display {
-            color: var(--accent); /* Cambia colore al testo al passaggio del mouse */
-          }
-          .exercise-details-clickable-area:hover .info-icon {
-            transform: rotate(10deg) scale(1.1); /* Ruota l'icona al passaggio del mouse */
             color: var(--accent);
           }
 
-          /* Stile per la scritta "Clicca per dettagli" */
-          .click-for-details {
-            position: absolute;
-            bottom: -15px; /* Posiziona sotto il nome dell'esercizio */
-            left: 0;
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.5);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            white-space: nowrap; /* Evita che il testo vada a capo */
-          }
-
-          .exercise-details-clickable-area:hover .click-for-details {
-            opacity: 1;
-          }
-
-
-          .exercise-details {
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-          }
-          .exercise-details p {
-            margin: 0;
-            font-size: 0.95rem;
-            color: rgba(255, 255, 255, 0.7);
-          }
-          @media (min-width: 640px) {
-            .exercise-details {
-              flex-direction: row;
-              align-items: center;
-              gap: 0.8rem;
-            }
-          }
-
-          .exercise-name-display { /* Nuovo stile per il nome dell'esercizio */
+          .exercise-name-display {
             transition: color 0.3s ease;
-            font-weight: 600; /* Rendi il nome dell'esercizio più evidente */
+            font-weight: 600;
             font-size: 1.1rem;
           }
           .exercise-name-completed {
@@ -1239,17 +1203,10 @@ const Program = ({ setCurrentView, showMessage }) => {
             opacity: 0.8;
           }
 
-          .info-icon {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 1.1rem;
-            transition: transform 0.3s ease, color 0.3s ease;
-          }
-
-
           .series-indicator-group {
             display: flex;
             gap: 0.4rem;
-            margin-left: 0.8rem; /* Spazio dall'esercizio */
+            margin-left: 0.8rem;
           }
 
           .series-dot {
@@ -1269,7 +1226,7 @@ const Program = ({ setCurrentView, showMessage }) => {
           .series-dot.active-dot {
             background: linear-gradient(45deg, var(--primary), var(--primary-dark));
             border-color: var(--primary);
-            animation: pulse-active-dot 1s infinite alternate; /* subtle animation */
+            animation: pulse-active-dot 1s infinite alternate;
           }
 
           @keyframes pulse-active-dot {
@@ -1347,6 +1304,7 @@ const Program = ({ setCurrentView, showMessage }) => {
             justify-content: center;
             z-index: 2000;
             backdrop-filter: blur(4px);
+            padding: 1rem;
           }
 
           .popup-content {
@@ -1354,7 +1312,8 @@ const Program = ({ setCurrentView, showMessage }) => {
             color: var(--dark);
             padding: 2.5rem;
             border-radius: var(--radius-lg);
-            max-width: 420px;
+            width: 100%;
+            max-width: 500px;
             text-align: center;
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.5);
@@ -1388,13 +1347,14 @@ const Program = ({ setCurrentView, showMessage }) => {
             color: #e60000;
             text-decoration: none;
             font-weight: 600;
-            margin: 0 1rem;
+            display: inline-block;
+            margin-top: 1rem;
           }
           .popup-link:hover {
             text-decoration: underline;
           }
 
-          .popup-button-close, .popup-break-end-button, .popup-skip-break-button {
+          .popup-button-close, .popup-break-end-button {
             padding: 0.8rem 1.8rem;
             border: none;
             border-radius: var(--radius-sm);
@@ -1402,12 +1362,11 @@ const Program = ({ setCurrentView, showMessage }) => {
             cursor: pointer;
             transition: var(--transition);
             color: white;
-            margin: 0.5rem;
+            margin-top: 1rem;
           }
 
           .popup-button-close {
             background: #6c757d;
-            color: white;
           }
           .popup-button-close:hover {
             background: #5a6268;
@@ -1416,32 +1375,20 @@ const Program = ({ setCurrentView, showMessage }) => {
 
           .popup-break-end-button {
             background: linear-gradient(135deg, var(--accent), #00b368);
-            color: white;
           }
           .popup-break-end-button:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 14px rgba(0, 224, 128, 0.4);
           }
 
-          .timer-display {
-            font-size: 3rem;
-            font-weight: 900;
-            color: var(--primary);
-            margin: 1.2rem 0;
-            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-          }
-
-          /* Stili specifici per il popup di controllo esercizio */
           .exercise-control-popup {
-            max-width: 500px;
-            padding: 3rem;
+            padding: 2rem 1.5rem;
           }
           .exercise-control-popup h3 {
-            font-size: 2.2rem;
-            margin-bottom: 0.8rem;
+            font-size: 1.8rem;
           }
           .exercise-popup-details {
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: #555;
             margin-bottom: 1.5rem;
           }
@@ -1449,16 +1396,16 @@ const Program = ({ setCurrentView, showMessage }) => {
             display: flex;
             flex-direction: column;
             gap: 1rem;
-            margin-top: 2rem;
-          }
-          .popup-actions-group .exercise-button {
+            margin-top: 1.5rem;
             width: 100%;
           }
-          .exercise-popup-info { /* Nuovo stile per i dettagli nel popup */
+
+          .exercise-popup-info {
             font-size: 0.95rem;
+            text-align: left;
             color: #666;
-            margin-bottom: 0.5rem;
-            line-height: 1.4;
+            margin-bottom: 0.8rem;
+            line-height: 1.5;
           }
           .exercise-popup-info strong {
             color: var(--primary-dark);
@@ -1467,49 +1414,31 @@ const Program = ({ setCurrentView, showMessage }) => {
       </style>
 
       <div className="program-container">
-        {/* Sezione Header: Contiene il titolo del programma e un pulsante per tornare alla Dashboard. */}
         <motion.div
-          initial={{ y: -60, opacity: 0, boxShadow: "0 15px 30px rgba(0, 0, 0, 0.15)" }}
+          initial={{ y: -60, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="header-section"
-          whileHover={{ translateY: -4 }}
         >
           <h1 className="header-title">Programma 12 Settimane</h1>
           <motion.button
-            whileHover={{ scale: 1.08, boxShadow: "0 8px 20px rgba(255, 107, 0, 0.3)" }}
+            whileHover={{ scale: 1.08 }}
             whileTap={{ scale: 0.97 }}
             onClick={() => setCurrentView("dashboard")}
             className="dashboard-button"
           >
-            Torna alla Dashboard
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.08, boxShadow: "0 8px 20px rgba(0, 224, 128, 0.3)" }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => setCurrentView("progressInfo")}
-            className="progress-button"
-          >
-            Info Progressi
+            Dashboard
           </motion.button>
         </motion.div>
 
-        {/* Sezione Panoramica del Programma: Fornisce informazioni generali, riscaldamento e defaticamento. */}
         <motion.div
-          initial={{ y: 40, opacity: 0, boxShadow: "0 20px 40px rgba(0, 0, 0, 0.12)" }}
+          initial={{ y: 40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.8 }}
           className="program-overview-card"
-          whileHover={{ translateY: -4 }}
         >
           <h2 className="overview-title">Panoramica del Programma</h2>
-          {[
-            { title: "1️⃣ Introduzione", content: "Benvenuta nel tuo percorso di trasformazione di 12 settimane! Questo programma è stato creato per aiutarti a costruire forza, resistenza e a raggiungere i tuoi obiettivi di fitness, il tutto utilizzando le pratiche fasce elastiche. Preparati a sfidare il tuo corpo e a vedere risultati reali!" },
-            { title: "2️⃣ Guida alle Fasce Elastiche", content: "Le fasce elastiche sono il tuo strumento segreto per un allenamento efficace. Il programma utilizza fasce ad anello chiuso da 60 cm, disponibili in diversi livelli di resistenza. Ogni colore corrisponde a un peso (verde: 2,27 kg; blu: 4,54 kg; gialla: 9,07 kg; rossa: 13,62 kg; nera: 18,16 kg). Utilizzarle correttamente ti garantirà il massimo beneficio per ogni esercizio! Ricorda che per alcuni esercizi che coinvolgono spinte verticali con carichi molto elevati (come la Military Press), le fasce da 60 cm potrebbero non essere ottimali come le fasce tubolari con maniglie, ma possono essere comunque utilizzate con il giusto posizionamento sotto i piedi." },
-            { title: "3️⃣ Struttura del Programma", content: "Il programma è strategicamente diviso in 3 fasi da 4 settimane ciascuna. Ogni fase è progettata per progredire in termini di intensità e complessità, assicurandoti di costruire una base solida e di avanzare costantemente verso i tuoi obiettivi. Segui la progressione per massimizzare i risultati e prevenire stalli." },
-            { title: "4️⃣ Riscaldamento", content: warmUpExercises.map((e, i) => <li key={i}>{e}</li>) },
-            { title: "5️⃣ Defaticamento", content: coolDownExercises.map((e, i) => <li key={i}>{e}</li>) },
-          ].map((section, idx) => (
+          {overviewSections.map((section, idx) => (
             <div key={idx} className="section-item">
               <button
                 className="section-button"
@@ -1517,7 +1446,6 @@ const Program = ({ setCurrentView, showMessage }) => {
               >
                 {section.title} <span className={expandedSection === `section${idx}` ? "rotated" : ""}>▼</span>
               </button>
-              {/* Utilizzo di AnimatePresence per animare l'entrata e l'uscita delle sezioni espanse */}
               <AnimatePresence>
                 {expandedSection === `section${idx}` && (
                   <motion.div
@@ -1527,8 +1455,21 @@ const Program = ({ setCurrentView, showMessage }) => {
                     transition={{ duration: 0.3 }}
                     className="section-content"
                   >
-                    {/* Correggi il rendering: se è un array (di <li>), usa <ul>, altrimenti renderizza il contenuto direttamente (stringa) */}
-                    {Array.isArray(section.content) ? <ul>{section.content}</ul> : <p>{section.content}</p>}
+                    {section.content ? (
+                      <p>{section.content}</p>
+                    ) : (
+                      <ul>
+                        {(section.type === 'warmup' ? warmUpExercisesData : coolDownExercisesData).map((ex, i) => (
+                          <li
+                            key={i}
+                            className="clickable-list-item"
+                            onClick={() => setInfoPopupContent(ex)}
+                          >
+                            {ex.name}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -1536,127 +1477,93 @@ const Program = ({ setCurrentView, showMessage }) => {
           ))}
         </motion.div>
 
-        {/* Suggerimento per la sezione Dettaglio Esercizi */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8, duration: 0.5 }}
-          className="details-hint-message"
-        >
-          Per maggiori dettagli su ogni esercizio e per i video tutorial, consulta la sezione <span onClick={() => setCurrentView("workoutDetail")} className="link">Dettaglio Esercizi</span>.
-        </motion.p>
-
-        {/* Selettore Settimane: Permette di navigare tra le diverse settimane del programma. */}
         <motion.div
-          initial={{ y: 40, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.4, duration: 0.8 }}
-          className="week-selector-container"
+            initial={{ y: 40, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className="week-selector-container"
+            ref={weekButtonsContainerRef}
         >
-          <div className="week-buttons-wrapper" ref={weekButtonsContainerRef}> {/* Aggiunto ref qui */}
-            {programma.map((w, idx) => (
-              <motion.button
-                key={w.settimana}
-                onClick={() => setCurrentWeek(idx)}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 + idx * 0.05, duration: 0.4 }}
-                whileHover={{ y: -3, scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className={`week-button ${currentWeek === idx ? "active" : ""}`}
-              >
-                Settimana {w.settimana}
-              </motion.button>
-            ))}
-          </div>
+            <div className="week-buttons-wrapper">
+                {programma.map((w, idx) => (
+                <motion.button
+                    key={w.settimana}
+                    onClick={() => setCurrentWeek(idx)}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 + idx * 0.05, duration: 0.4 }}
+                    whileHover={{ y: -3, scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={`week-button ${currentWeek === idx ? "active" : ""}`}
+                >
+                    Settimana {w.settimana}
+                </motion.button>
+                ))}
+            </div>
         </motion.div>
 
-        {/* Sezione Allenamenti: Visualizza gli allenamenti e gli esercizi per la settimana selezionata. */}
-        <div className="workouts-section">
+
+        <div className="workouts-section" style={{width: '100%', maxWidth: '1200px'}}>
           <h2 className="workouts-title">
             Settimana {programma[currentWeek].settimana} - {programma[currentWeek].fase}
           </h2>
           {programma[currentWeek].allenamenti.map((workout, wi) => (
             <motion.div
               key={wi}
-              initial={{ y: 40, opacity: 0, boxShadow: "0 20px 40px rgba(0, 0, 0, 0.12)" }}
+              initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.6 + wi * 0.1, duration: 0.6 }}
               className="workout-card"
-              whileHover={{ translateY: -4 }}
             >
               <h3 className="workout-day-title">{workout.giorno}</h3>
               {workout.esercizi.map((ex, ei) => {
-                const key = `w${currentWeek}_a${wi}_e${ei}`; // Chiave unica per l'esercizio.
+                const key = `w${currentWeek}_a${wi}_e${ei}`;
                 const currentExerciseProgress = completed[key] || { completedSeriesCount: 0, isFinished: false, hasStartedCurrentSeries: false };
                 const { completedSeriesCount, isFinished, hasStartedCurrentSeries } = currentExerciseProgress;
-                const isTimerRunningForThisExercise = timer.active && timer.workoutKey === key;
-                const isAnyTimerActive = timer.active; // True se qualsiasi timer è attivo
+                const isAnyTimerActive = timer.active;
 
                 return (
                   <motion.div
                     key={ei}
-                    initial={{ opacity: 0, x: -20, boxShadow: "0 0px 0px rgba(0, 0, 0, 0)" }}
+                    initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.7 + ei * 0.05, duration: 0.4 }}
                     className={`exercise-item ${hasStartedCurrentSeries && !isFinished ? 'active-exercise' : ''}`}
-                    whileHover={{ x: 6, backgroundColor: 'rgba(255, 255, 255, 0.15)', borderLeft: '3px solid var(--accent)' }}
                   >
-                    {/* Area cliccabile per i dettagli dell'esercizio */}
                     <div
                       className="exercise-details-clickable-area"
-                      onClick={() => setExerciseDetailsPopup(ex)} // Apre il popup dettagliato
+                      onClick={() => setExerciseDetailsPopup(ex)}
                     >
-                      <div className="exercise-details">
+                      <div>
                         <span className={`${isFinished ? "exercise-name-completed" : "exercise-name-display"}`}>
                           {ex.nome} ({ex.serie}x{ex.ripetizioni})
+                          {ex.fascia && <span> {fasce[ex.fascia].emoji}</span>}
                         </span>
-                        {ex.fascia && <span> {fasce[ex.fascia].emoji}</span>}
-                        {/* Indicatore visivo delle serie completate */}
-                        <SeriesIndicator
-                          completed={completedSeriesCount}
-                          total={ex.serie}
-                          isCurrentActive={hasStartedCurrentSeries && completedSeriesCount < ex.serie}
-                        />
-                        {/* Nuova scritta "Clicca per dettagli" */}
-                        <span className="click-for-details">Clicca per dettagli</span>
                       </div>
+                      <SeriesIndicator
+                        completed={completedSeriesCount}
+                        total={ex.serie}
+                        isCurrentActive={hasStartedCurrentSeries && completedSeriesCount < ex.serie}
+                      />
                     </div>
 
                     <div className="exercise-buttons-group">
-                      {/* Pulsante per Dettagli & Video (YouTube) - Ora disabilitato se un timer è attivo */}
-                      <motion.button
-                        onClick={() => setExerciseDetailsPopup(ex)} // Apre il popup dettagliato
-                        disabled={isAnyTimerActive}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className={`exercise-button youtube-button ${isAnyTimerActive ? "disabled" : ""}`}
-                      >
-                        Dettagli & Video
-                      </motion.button>
-
-                      {!isFinished && (
-                        <>
-                          {/* Pulsante "Inizia Serie" - ora apre il popup di controllo */}
-                          {!hasStartedCurrentSeries && (
-                            <motion.button
-                              onClick={() => handleStartSeries(currentWeek, wi, ei, ex)}
-                              disabled={isAnyTimerActive}
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.95 }}
-                              className={`exercise-button ${isAnyTimerActive ? "disabled" : ""}`}
-                            >
-                              Inizia Serie
+                       {!isFinished && (
+                          <motion.button
+                            onClick={() => handleStartSeries(currentWeek, wi, ei, ex)}
+                            disabled={isAnyTimerActive && !(activeExerciseKeyInPopup === key)}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className={`exercise-button ${isAnyTimerActive && !(activeExerciseKeyInPopup === key) ? "disabled" : ""}`}
+                          >
+                            {hasStartedCurrentSeries ? 'Continua' : 'Inizia'}
+                          </motion.button>
+                        )}
+                        {isFinished && (
+                            <motion.button className="exercise-button disabled" disabled>
+                                ✔ Completato
                             </motion.button>
-                          )}
-                        </>
-                      )}
-
-                      {isFinished && ( // Se l'esercizio è completato, mostra solo lo stato
-                        <motion.button className="exercise-button disabled" disabled>
-                          ✔ Completato
-                        </motion.button>
-                      )}
+                        )}
                     </div>
                   </motion.div>
                 );
@@ -1665,7 +1572,39 @@ const Program = ({ setCurrentView, showMessage }) => {
           ))}
         </div>
 
-        {/* Popup Dettagli Esercizio (per informazioni generali) */}
+        <AnimatePresence>
+            {infoPopupContent && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="popup-overlay"
+                    onClick={() => setInfoPopupContent(null)}
+                >
+                    <motion.div
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.8, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="popup-content"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <h3>{infoPopupContent.name}</h3>
+                        <p style={{textAlign: 'left', whiteSpace: 'pre-wrap'}}>{infoPopupContent.description}</p>
+                        <motion.button
+                            onClick={() => setInfoPopupContent(null)}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="popup-button-close"
+                        >
+                            Chiudi
+                        </motion.button>
+                    </motion.div>
+                </motion.div>
+            )}
+        </AnimatePresence>
+
         <AnimatePresence>
           {exerciseDetailsPopup && (
             <motion.div
@@ -1674,6 +1613,7 @@ const Program = ({ setCurrentView, showMessage }) => {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
               className="popup-overlay"
+              onClick={() => setExerciseDetailsPopup(null)}
             >
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
@@ -1681,13 +1621,13 @@ const Program = ({ setCurrentView, showMessage }) => {
                 exit={{ scale: 0.8, opacity: 0 }}
                 transition={{ duration: 0.3 }}
                 className="popup-content"
+                onClick={(e) => e.stopPropagation()}
               >
-                <h3>Dettagli Esercizio: {exerciseDetailsPopup.nome}</h3>
-                <p><strong>Serie:</strong> {exerciseDetailsPopup.serie}</p>
-                <p><strong>Ripetizioni:</strong> {exerciseDetailsPopup.ripetizioni}</p>
-                {exerciseDetailsPopup.fascia && <p><strong>Fascia Consigliata:</strong> {fasce[exerciseDetailsPopup.fascia].emoji} {exerciseDetailsPopup.fascia} ({fasce[exerciseDetailsPopup.fascia].peso})</p>}
-                {exerciseDetailsPopup.bandPlacement && <p><strong>Posizionamento Fascia:</strong> {exerciseDetailsPopup.bandPlacement}</p>}
-                {exerciseDetailsPopup.bandSuggestionDetail && <p><strong>Suggerimento Fascia:</strong> {exerciseDetailsPopup.bandSuggestionDetail}</p>}
+                <h3>{exerciseDetailsPopup.nome}</h3>
+                <p className="exercise-popup-info"><strong>Serie x Ripetizioni:</strong> {exerciseDetailsPopup.serie}x{exerciseDetailsPopup.ripetizioni}</p>
+                 {exerciseDetailsPopup.fascia && <p className="exercise-popup-info"><strong>Fascia:</strong> {fasce[exerciseDetailsPopup.fascia].emoji} {exerciseDetailsPopup.fascia} ({fasce[exerciseDetailsPopup.fascia].peso})</p>}
+                {exerciseDetailsPopup.bandPlacement && <p className="exercise-popup-info"><strong>Posizionamento:</strong> {exerciseDetailsPopup.bandPlacement}</p>}
+                {exerciseDetailsPopup.bandSuggestionDetail && <p className="exercise-popup-info"><strong>Suggerimento:</strong> {exerciseDetailsPopup.bandSuggestionDetail}</p>}
                 {exerciseDetailsPopup.suggerimento && (
                   <a href={getYoutubeLink(exerciseDetailsPopup.suggerimento)} target="_blank" rel="noopener noreferrer" className="popup-link">
                     Guarda Video su YouTube
@@ -1706,7 +1646,6 @@ const Program = ({ setCurrentView, showMessage }) => {
           )}
         </AnimatePresence>
 
-        {/* Nuovo Popup di Controllo Esercizio */}
         <AnimatePresence>
           {activeExerciseInPopup && (
             <ExerciseControlPopup
@@ -1717,17 +1656,12 @@ const Program = ({ setCurrentView, showMessage }) => {
               onCompleteSeries={handleCompleteSeries}
               onSkipBreak={skipBreak}
               onFinishExercise={handleFinishExercise}
-              onClose={() => {
-                setActiveExerciseInPopup(null);
-                setActiveExerciseKeyInPopup(null);
-                setTimer(prev => ({ ...prev, active: false, workoutKey: null })); // Ferma il timer se attivo
-              }}
+              onClose={handleFinishExercise}
               fasce={fasce}
             />
           )}
         </AnimatePresence>
 
-        {/* Popup Pausa Terminata (mostrato solo alla fine del timer) */}
         <AnimatePresence>
           {showBreakEndPopup && (
             <motion.div
