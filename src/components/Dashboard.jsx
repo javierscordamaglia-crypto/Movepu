@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
-const Dashboard = ({ setCurrentView }) => {
-  const [userName, setUserName] = useState("Utente");
+const Dashboard = ({ setCurrentView, userName }) => {
   const [currentDate, setCurrentDate] = useState("");
+  const [greeting, setGreeting] = useState("Ciao");
+  const [currentTime, setCurrentTime] = useState("");
+  const [showBanner, setShowBanner] = useState(true); // Stato per il banner
+
   const [motivationalMessage] = useState([
     "Oggi è il giorno perfetto per superare i tuoi limiti!",
     "Il corpo raggiunge ciò che la mente crede possibile.",
@@ -18,24 +21,29 @@ const Dashboard = ({ setCurrentView }) => {
   ][Math.floor(Math.random() * 10)]);
 
   useEffect(() => {
-    // I dati utente sono simulati poiché la configurazione di Firebase non è presente.
-    const mockUser = {
-        displayName: "Atleta",
-        email: "atleta@moveup.com"
-    };
-    setUserName(mockUser.displayName || mockUser.email?.split("@")[0] || "Utente");
+    // Imposta il saluto in base all'ora
+    const hour = new Date().getHours();
+    if (hour < 14) {
+      setGreeting("Buongiorno");
+    } else {
+      setGreeting("Buonasera");
+    }
 
+    // Imposta la data
     const today = new Date();
     const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
     const formattedDate = today.toLocaleDateString('it-IT', options).replace(/^\w/, (c) => c.toUpperCase());
     setCurrentDate(formattedDate);
-  }, []);
 
-  const handleLogout = () => {
-    // La funzione di logout ora reindirizza semplicemente alla vista di login.
-    console.log("Logout richiesto.");
-    setCurrentView("login");
-  };
+    // Imposta e aggiorna l'orario
+    const timerId = setInterval(() => {
+        const time = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+        setCurrentTime(time);
+    }, 1000);
+
+    // Pulisce l'intervallo quando il componente viene smontato
+    return () => clearInterval(timerId);
+  }, []);
 
   const buttonsData = [
     { label: "Motivazione", view: "motivation", cls: "button-motivation", emoji: "💪", description: "Trova la carica e scopri la filosofia del nostro approccio." },
@@ -97,6 +105,37 @@ const Dashboard = ({ setCurrentView }) => {
             z-index: -1;
           }
 
+          .info-banner {
+            width: 100%;
+            max-width: 1200px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-md);
+            font-size: 0.9rem;
+          }
+          .info-banner button {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 1rem;
+            transition: background 0.2s ease;
+          }
+          .info-banner button:hover {
+            background: rgba(255,255,255,0.4);
+          }
+
+
           .dashboard-header {
             width: 100%;
             max-width: 1200px;
@@ -108,33 +147,19 @@ const Dashboard = ({ setCurrentView }) => {
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-lg);
             display: flex;
-            justify-content: space-between;
+            justify-content: center; /* Centrato ora che non c'è il logout */
             align-items: center;
             flex-wrap: wrap;
             gap: 1.5rem;
             position: relative;
             overflow: hidden;
-          }
-
-          .dashboard-header::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: linear-gradient(45deg, transparent, rgba(255, 107, 0, 0.1), transparent);
-            pointer-events: none;
-            animation: shine 4s ease-in-out infinite;
-          }
-
-          @keyframes shine {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
+            text-align: center;
           }
 
           .user-info {
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
+            align-items: center; /* Centrato */
             gap: 0.6rem;
           }
 
@@ -158,29 +183,6 @@ const Dashboard = ({ setCurrentView }) => {
             color: var(--gray);
             font-weight: 500;
             margin-top: 0.4rem;
-          }
-
-          .logout-button {
-            padding: 0.75rem 1.75rem;
-            background: linear-gradient(135deg, #e60000, #cc0000);
-            color: white;
-            font-weight: 700;
-            border: none;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            box-shadow: 0 6px 16px rgba(230, 0, 0, 0.3);
-            transition: var(--transition);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-          }
-
-          .logout-button:hover {
-            transform: translateY(-3px) scale(1.04);
-            box-shadow: 0 8px 20px rgba(230, 0, 0, 0.4);
-          }
-
-          .logout-button:active {
-            transform: translateY(-1px);
           }
 
           .motivational-card {
@@ -255,6 +257,12 @@ const Dashboard = ({ setCurrentView }) => {
             pointer-events: none;
             animation: shine 3s ease-in-out infinite;
           }
+
+          @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+          }
+
 
           .start-workout-button:hover {
             transform: translateY(-10px) scale(1.05);
@@ -354,6 +362,21 @@ const Dashboard = ({ setCurrentView }) => {
       </style>
 
       <div className="dashboard-container">
+        {/* Banner informativo temporaneo */}
+        <AnimatePresence>
+            {showBanner && (
+                <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className="info-banner"
+                >
+                    <span>Consiglio: Aggiungi questa pagina alla tua schermata Home per un accesso rapido!</span>
+                    <button onClick={() => setShowBanner(false)}>✕</button>
+                </motion.div>
+            )}
+        </AnimatePresence>
+        
         {/* Header */}
         <motion.div
           initial={{ y: -60, opacity: 0 }}
@@ -363,18 +386,10 @@ const Dashboard = ({ setCurrentView }) => {
           whileHover={{ translateY: -4 }}
         >
           <div className="user-info">
-            <h1 className="welcome-title">Benvenuto,</h1>
-            <p className="welcome-name">{userName}</p>
-            <p className="current-date">{currentDate}</p>
+            <h1 className="welcome-title">{greeting},</h1>
+            <p className="welcome-name">{userName || 'Atleta'}</p>
+            <p className="current-date">{currentDate} - {currentTime}</p>
           </div>
-          <motion.button
-            whileHover={{ scale: 1.08, boxShadow: "0 8px 20px rgba(230, 0, 0, 0.4)" }}
-            whileTap={{ scale: 0.97 }}
-            onClick={handleLogout}
-            className="logout-button"
-          >
-            Logout
-          </motion.button>
         </motion.div>
 
         {/* Card Motivazionale */}
@@ -433,3 +448,4 @@ const Dashboard = ({ setCurrentView }) => {
 };
 
 export default Dashboard;
+
