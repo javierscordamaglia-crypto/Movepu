@@ -1136,6 +1136,11 @@ const Program = ({ setCurrentView }) => {
             transform: translateY(-2px);
             box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
           }
+          
+          .workouts-section {
+            width: 100%;
+            max-width: 1200px;
+          }
 
           .workout-day-title {
             font-size: 1.9rem;
@@ -1499,7 +1504,7 @@ const Program = ({ setCurrentView }) => {
         </motion.div>
 
 
-        <div className="workouts-section" style={{width: '100%', maxWidth: '1200px'}}>
+        <div className="workouts-section">
           <h2 className="workouts-title">
             Settimana {programma[currentWeek].settimana} - {programma[currentWeek].fase}
           </h2>
@@ -1697,4 +1702,3 @@ const Program = ({ setCurrentView }) => {
 };
 
 export default Program;
-
