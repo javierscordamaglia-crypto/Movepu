@@ -831,7 +831,7 @@ const Program = ({ setCurrentView }) => {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PHBhdGggZD0iTTEwIDBoLTEwdi0xMCBMMCAyMC41IDMuNSAyNCAwIDMwIDAgNDAgNSA0NSA1IDM1IDEwIDMwIDEwIDIwIDE1IDI1IDE1IDE1IDEwIDEwek0yMCAwaC0xMHYxMGgxMHYtMTB6bTEwIDBoLTEwdjEwaDEwdi0xMHptMTAgMGgtMTB2MTBoMTB2LTEwemm1MCAwaC0xMHYxMGgxMHYtMTB6bTEwIDBoLTEwdjEwaDEwdi0xMHptMTAgMGgtMTB2MTBoMTB2LTEwek0wIDMwdi0xMGgxMHYxMGgtMTB6bTEwIDBoLTEwdjEwaDEwdi0xMHptMTAgMGgtMTB2MTBoMTB2LTEwemm10IDBoLTEwdjEwaDEwdi0xMHptMTAgMGgtMTB2MTBoMTB2LTEwemm1MCAwaC0xMHYxMGgxMHYtMTAwek00MCAwdi0xMGgxMHYxMHoiIGZpbGw9IiNmZmZmZmYwMSIvPjwvc3ZnPg==');
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PHBhdGggZD0iTTEwIDBoLTEwdi0xMCBMMCAyMC41IDMuNSAyNCAwIDMwIDAgNDAgNSA0NSA1IDM1IDEwIDMwIDEwIDIwIDE1IDI1IDE1IDE1IDEwIDEwek0yMCAwaC0xMHYxMGgxMHYtMTB6bTEwIDBoLTEwdjEwaDEwdi0xMHptMTAgMGgtMTB2MTBoMTB2LTEwemm1MCAwaC0xMHYxMGgxMHYtMTB6bTEwIDBoLTEwdjEwaDEwdi0xMHptMTAgMGgtMTB2MTBoMTB2LTEwek0wIDMwdi0xMGgxMHYxMGgtMTB6bTEwIDBoLTEwdjEwaDEwdi0xMHptMTAgMGgtMTB2MTBoMTB2LTEwemm10IDBoLTEwdjEwaDEwdi0xMHptMTAgMGgtMTB2MTBoMTB2LTEwemm1MCAwaC0xMHYxMGgxMHYtTAwek00MCAwdi0xMGgxMHYxMHoiIGZpbGw9IiNmZmZmZmYwMSIvPjwvc3ZnPg==');
             opacity: 0.03;
             pointer-events: none;
             z-index: -1;
@@ -1085,7 +1085,7 @@ const Program = ({ setCurrentView }) => {
             max-width: 1200px;
             overflow-x: auto;
             margin-bottom: 2.5rem;
-            /* Removed grid layout which caused centering issues on mobile */
+            display: flex; /* MODIFICA: Aggiunto per permettere il centraggio del wrapper interno */
             scrollbar-width: thin;
             scrollbar-color: var(--secondary) transparent;
           }
@@ -1104,9 +1104,9 @@ const Program = ({ setCurrentView }) => {
           .week-buttons-wrapper {
             display: flex;
             gap: 1.2rem;
-            padding: 0.8rem 24px; /* Added padding so buttons don't touch edges */
+            padding: 0.8rem 24px; 
             min-width: fit-content;
-            justify-content: flex-start; /* Let JS handle centering */
+            margin: 0 auto; /* MODIFICA: Centra il wrapper. Sostituisce justify-content */
           }
 
           .week-button {
