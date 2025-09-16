@@ -28,7 +28,7 @@ const Login = ({ setCurrentView, setUserName }) => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       if (user) {
-        setUserName(user.displayName || user.email?.split('@')[0] || 'Utente');
+        setUserName(user.displayName || user.email?.split('@')[0] || 'Atleta');
         setCurrentView('dashboard');
       }
     } catch (error) {
@@ -40,7 +40,8 @@ const Login = ({ setCurrentView, setUserName }) => {
   };
 
   // Gestisce il login/registrazione con Email e Password
-  const handleEmailAuth = async () => {
+  const handleEmailAuth = async (e) => {
+    e.preventDefault(); // Previene il ricaricamento della pagina
     setLoading('email');
     setError(null);
     setVerificationSent(false);
@@ -73,6 +74,7 @@ const Login = ({ setCurrentView, setUserName }) => {
           break;
         case 'auth/user-not-found':
         case 'auth/wrong-password':
+        case 'auth/invalid-credential':
           errorMessage = "Email o password errati.";
           break;
         default:
@@ -192,7 +194,7 @@ const Login = ({ setCurrentView, setUserName }) => {
             width: 100%;
             box-sizing: border-box;
           }
-          .google-login-button:hover {
+          .google-login-button:hover:not(:disabled) {
             transform: translateY(-4px);
             box-shadow: 0 12px 25px rgba(0,0,0,0.2);
           }
@@ -235,13 +237,14 @@ const Login = ({ setCurrentView, setUserName }) => {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
             >
-              <div className="auth-form">
+              <form onSubmit={handleEmailAuth} className="auth-form">
                 <input
                   type="email"
                   placeholder="Email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="auth-input"
+                  required
                 />
                 <input
                   type="password"
@@ -249,9 +252,10 @@ const Login = ({ setCurrentView, setUserName }) => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="auth-input"
+                  required
                 />
                 <motion.button
-                  onClick={handleEmailAuth}
+                  type="submit"
                   disabled={loading === 'email'}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -259,7 +263,7 @@ const Login = ({ setCurrentView, setUserName }) => {
                 >
                   {loading === 'email' ? 'Caricamento...' : (isLoginView ? 'Accedi' : 'Registrati')}
                 </motion.button>
-              </div>
+              </form>
             </motion.div>
           </AnimatePresence>
           
