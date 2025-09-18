@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // --- Dati Statici del Programma ---
-// Definizione delle fasce elastiche con il loro peso e emoji rappresentativa.
 const fasce = {
   verde: { peso: "2,27 kg", emoji: "🟢" },
   blu: { peso: "4,54 kg", emoji: "🔵" },
@@ -11,63 +10,58 @@ const fasce = {
   nera: { peso: "18,16 kg", emoji: "⚫" },
 };
 
-// Elenco degli esercizi di riscaldamento con descrizione.
 const warmUpExercisesData = [
-    {
-        name: "Jumping Jack (leggeri) – 1 min",
-        description: "Inizia in piedi con i piedi uniti e le braccia lungo i fianchi. Salta divaricando le gambe alla larghezza delle spalle e contemporaneamente porta le braccia sopra la testa. Ritorna alla posizione di partenza con un altro salto. Mantieni un ritmo leggero e costante per attivare il sistema cardiovascolare.",
-    },
-    {
-        name: "Cerchi con le braccia – 30 sec avanti / 30 sec indietro",
-        description: "Stai in piedi con i piedi alla larghezza delle spalle e le braccia estese ai lati, parallele al pavimento. Esegui piccoli cerchi controllati in avanti per 30 secondi, poi inverti il movimento eseguendo cerchi all'indietro per altri 30 secondi. Aumenta gradualmente l'ampiezza dei cerchi.",
-    },
-    {
-        name: "World’s Greatest Stretch – 30 sec per lato",
-        description: "Fai un passo avanti in una posizione di affondo. Piega il busto e appoggia la mano opposta alla gamba anteriore a terra. L'altra mano va vicino al piede. Ruota il busto verso la gamba anteriore, portando il braccio verso il soffitto. Mantieni la posizione per qualche secondo e ripeti dall'altro lato.",
-    },
-    {
-        name: "Bodyweight Squat – 10 rip",
-        description: "Stai in piedi con i piedi alla larghezza delle spalle. Abbassa i fianchi come se ti stessi sedendo su una sedia, mantenendo il petto alto e la schiena dritta. Scendi finché le cosce non sono parallele al suolo (o fin dove riesci comodamente), poi torna in piedi. Esegui 10 ripetizioni controllate.",
-    },
-    {
-        name: "Swing della gamba (laterale e posteriore) – 10x per gamba",
-        description: "Appoggiati a un muro o a un supporto stabile. Dondola una gamba avanti e indietro in modo controllato per 10 volte. Poi, girati di 90 gradi e dondola la stessa gamba lateralmente (da un lato all'altro) per 10 volte. Ripeti con l'altra gamba.",
-    },
-    {
-        name: "Glute Bridge con fascia verde – 10 rip (per attivare i glutei)",
-        description: "Sdraiati sulla schiena con le ginocchia piegate e i piedi appoggiati a terra. Posiziona una fascia elastica leggera appena sopra le ginocchia. Spingi le ginocchia verso l'esterno contro la resistenza della fascia e solleva i fianchi verso il soffitto, contraendo i glutei. Mantieni la posizione per un secondo e abbassa lentamente.",
-    },
+  {
+    name: "Jumping Jack (leggeri) – 1 min",
+    description: "Inizia in piedi con i piedi uniti e le braccia lungo i fianchi. Salta divaricando le gambe alla larghezza delle spalle e contemporaneamente porta le braccia sopra la testa. Ritorna alla posizione di partenza con un altro salto. Mantieni un ritmo leggero e costante per attivare il sistema cardiovascolare.",
+  },
+  {
+    name: "Cerchi con le braccia – 30 sec avanti / 30 sec indietro",
+    description: "Stai in piedi con i piedi alla larghezza delle spalle e le braccia estese ai lati, parallele al pavimento. Esegui piccoli cerchi controllati in avanti per 30 secondi, poi inverti il movimento eseguendo cerchi all'indietro per altri 30 secondi. Aumenta gradualmente l'ampiezza dei cerchi.",
+  },
+  {
+    name: "World’s Greatest Stretch – 30 sec per lato",
+    description: "Fai un passo avanti in una posizione di affondo. Piega il busto e appoggia la mano opposta alla gamba anteriore a terra. L'altra mano va vicino al piede. Ruota il busto verso la gamba anteriore, portando il braccio verso il soffitto. Mantieni la posizione per qualche secondo e ripeti dall'altro lato.",
+  },
+  {
+    name: "Bodyweight Squat – 10 rip",
+    description: "Stai in piedi con i piedi alla larghezza delle spalle. Abbassa i fianchi come se ti stessi sedendo su una sedia, mantenendo il petto alto e la schiena dritta. Scendi finché le cosce non sono parallele al suolo (o fin dove riesci comodamente), poi torna in piedi. Esegui 10 ripetizioni controllate.",
+  },
+  {
+    name: "Swing della gamba (laterale e posteriore) – 10x per gamba",
+    description: "Appoggiati a un muro o a un supporto stabile. Dondola una gamba avanti e indietro in modo controllato per 10 volte. Poi, girati di 90 gradi e dondola la stessa gamba lateralmente (da un lato all'altro) per 10 volte. Ripeti con l'altra gamba.",
+  },
+  {
+    name: "Glute Bridge con fascia verde – 10 rip (per attivare i glutei)",
+    description: "Sdraiati sulla schiena con le ginocchia piegate e i piedi appoggiati a terra. Posiziona una fascia elastica leggera appena sopra le ginocchia. Spingi le ginocchia verso l'esterno contro la resistenza della fascia e solleva i fianchi verso il soffitto, contraendo i glutei. Mantieni la posizione per un secondo e abbassa lentamente.",
+  },
 ];
 
-// Elenco degli esercizi di defaticamento con descrizione.
 const coolDownExercisesData = [
-    {
-        name: "Allungamento quadricipiti – 30 sec per gamba",
-        description: "In piedi, appoggiati a un supporto se necessario. Afferra la caviglia destra con la mano destra e tira delicatamente il tallone verso il gluteo, mantenendo le ginocchia vicine. Dovresti sentire un allungamento nella parte anteriore della coscia. Mantieni per 30 secondi e cambia gamba.",
-    },
-    {
-        name: "Allungamento flessori (hamstring) – 30 sec per gamba",
-        description: "Siediti a terra con una gamba distesa davanti a te. Piega l'altra gamba portando la pianta del piede contro l'interno coscia della gamba distesa. Piegati lentamente in avanti verso la punta del piede della gamba distesa fino a sentire un allungamento. Mantieni per 30 secondi e cambia lato.",
-    },
-    {
-        name: "Piriforme stretch (in posizione incrociata) – 30 sec per lato",
-        description: "Sdraiati sulla schiena con le ginocchia piegate. Accavalla la caviglia destra sul ginocchio sinistro. Afferra la coscia sinistra con entrambe le mani e tira delicatamente verso il petto fino a sentire un allungamento nel gluteo destro. Mantieni per 30 secondi e cambia lato.",
-    },
-    {
-        name: "Cat-Cow (micio-mucca) – 1 min",
-        description: "Mettiti a quattro zampe con le mani sotto le spalle e le ginocchia sotto i fianchi. Inspira, inarca la schiena portando la pancia verso il basso e guarda in alto (posizione della mucca). Espira, arrotonda la colonna vertebrale verso il soffitto e guarda verso l'ombelico (posizione del gatto). Alterna i due movimenti lentamente per un minuto.",
-    },
-    {
-        name: "Respirazione consapevole (addominale) – 1 min",
-        description: "Siediti o sdraiati in una posizione comoda. Chiudi gli occhi e appoggia una mano sulla pancia. Inspira lentamente dal naso, sentendo la pancia che si gonfia. Espira lentamente dalla bocca, sentendo la pancia che si sgonfia. Concentrati solo sul tuo respiro per un minuto.",
-    },
+  {
+    name: "Allungamento quadricipiti – 30 sec per gamba",
+    description: "In piedi, appoggiati a un supporto se necessario. Afferra la caviglia destra con la mano destra e tira delicatamente il tallone verso il gluteo, mantenendo le ginocchia vicine. Dovresti sentire un allungamento nella parte anteriore della coscia. Mantieni per 30 secondi e cambia gamba.",
+  },
+  {
+    name: "Allungamento flessori (hamstring) – 30 sec per gamba",
+    description: "Siediti a terra con una gamba distesa davanti a te. Piega l'altra gamba portando la pianta del piede contro l'interno coscia della gamba distesa. Piegati lentamente in avanti verso la punta del piede della gamba distesa fino a sentire un allungamento. Mantieni per 30 secondi e cambia lato.",
+  },
+  {
+    name: "Piriforme stretch (in posizione incrociata) – 30 sec per lato",
+    description: "Sdraiati sulla schiena con le ginocchia piegate. Accavalla la caviglia destra sul ginocchio sinistro. Afferra la coscia sinistra con entrambe le mani e tira delicatamente verso il petto fino a sentire un allungamento nel gluteo destro. Mantieni per 30 secondi e cambia lato.",
+  },
+  {
+    name: "Cat-Cow (micio-mucca) – 1 min",
+    description: "Mettiti a quattro zampe con le mani sotto le spalle e le ginocchia sotto i fianchi. Inspira, inarca la schiena portando la pancia verso il basso e guarda in alto (posizione della mucca). Espira, arrotonda la colonna vertebrale verso il soffitto e guarda verso l'ombelico (posizione del gatto). Alterna i due movimenti lentamente per un minuto.",
+  },
+  {
+    name: "Respirazione consapevole (addominale) – 1 min",
+    description: "Siediti o sdraiati in una posizione comoda. Chiudi gli occhi e appoggia una mano sulla pancia. Inspira lentamente dal naso, sentendo la pancia che si gonfia. Espira lentamente dalla bocca, sentendo la pancia che si sgonfia. Concentrati solo sul tuo respiro per un minuto.",
+  },
 ];
 
-// Funzione per generare l'intero programma di allenamento di 12 settimane.
 const generateProgramData = () => {
   const allWeeks = [];
-
-  // FASE 1: Settimane 1-4 - Focus sui fondamentali e l'attivazione.
   for (let i = 1; i <= 4; i++) {
     const weekNum = i;
     let squatFascia = "verde";
@@ -225,7 +219,6 @@ const generateProgramData = () => {
     });
   }
 
-  // FASE 2: Settimane 5-8 - Costruzione della forza con intensità aumentata.
   for (let i = 5; i <= 8; i++) {
     const weekNum = i;
     allWeeks.push({
@@ -370,7 +363,6 @@ const generateProgramData = () => {
     });
   }
 
-  // FASE 3: Settimane 9-12 - Massima intensificazione e potenza.
   for (let i = 9; i <= 12; i++) {
     const weekNum = i;
     allWeeks.push({
@@ -520,11 +512,9 @@ const generateProgramData = () => {
       ],
     });
   }
-
   return allWeeks;
 };
 
-// Generazione del programma completo una sola volta all'avvio dell'applicazione.
 const programma = generateProgramData();
 
 // --- Componente ausiliario per l'indicatore visivo delle serie ---
@@ -580,23 +570,20 @@ const ExerciseControlPopup = ({
         exit={{ scale: 0.8, opacity: 0 }}
         transition={{ duration: 0.3 }}
         className="popup-content exercise-control-popup"
-        onClick={(e) => e.stopPropagation()} // Impedisce la chiusura cliccando all'interno del popup
+        onClick={(e) => e.stopPropagation()}
       >
         <h3>{exercise.nome}</h3>
         <p className="exercise-popup-details">
           Serie: {completedSeriesCount} / {exercise.serie} | Ripetizioni: {exercise.ripetizioni}
           {exercise.fascia && ` | Fascia: ${fasce[exercise.fascia].emoji} ${exercise.fascia}`}
         </p>
-
         {exercise.bandPlacement && <p className="exercise-popup-info"><strong>Posizionamento Fascia:</strong> {exercise.bandPlacement}</p>}
         {exercise.bandSuggestionDetail && <p className="exercise-popup-info"><strong>Suggerimento Fascia:</strong> {exercise.bandSuggestionDetail}</p>}
-
         <SeriesIndicator
           completed={completedSeriesCount}
           total={exercise.serie}
           isCurrentActive={completedSeriesCount < exercise.serie}
         />
-
         <div className="popup-actions-group">
           {!isFinished && !isTimerRunningForThisExercise && (
             <motion.button
@@ -609,7 +596,6 @@ const ExerciseControlPopup = ({
               Completa Serie {completedSeriesCount + 1} / {exercise.serie}
             </motion.button>
           )}
-
           {isTimerRunningForThisExercise && (
             <motion.button
               onClick={onSkipBreak}
@@ -620,13 +606,11 @@ const ExerciseControlPopup = ({
               Salta Pausa ({timerState.seconds}s)
             </motion.button>
           )}
-
           {isFinished && (
             <motion.button className="exercise-button disabled" disabled>
               ✔ Completato
             </motion.button>
           )}
-
           {exercise.suggerimento && (
             <motion.a
               href={getYoutubeLink(exercise.suggerimento)}
@@ -639,7 +623,6 @@ const ExerciseControlPopup = ({
               Guarda Video su YouTube
             </motion.a>
           )}
-
           <motion.button
             onClick={() => onFinishExercise(exercise)}
             whileHover={{ scale: 1.05 }}
@@ -662,9 +645,9 @@ const Program = ({ setCurrentView }) => {
   const [expandedSection, setExpandedSection] = useState(null);
   const [activeExerciseInPopup, setActiveExerciseInPopup] = useState(null);
   const [activeExerciseKeyInPopup, setActiveExerciseKeyInPopup] = useState(null);
-  const [infoPopupContent, setInfoPopupContent] = useState(null); // Stato per il popup di riscaldamento/defaticamento
-
+  const [infoPopupContent, setInfoPopupContent] = useState(null);
   const weekButtonsContainerRef = useRef(null);
+  const activeWeekButtonRef = useRef(null);
 
   const [timer, setTimer] = useState({
     active: false,
@@ -675,7 +658,7 @@ const Program = ({ setCurrentView }) => {
   });
   const [showBreakEndPopup, setShowBreakEndPopup] = useState(false);
   const timerRef = useRef(null);
-  
+
   useEffect(() => {
     if (timer.active && timer.seconds > 0) {
       timerRef.current = setInterval(() => {
@@ -688,7 +671,6 @@ const Program = ({ setCurrentView }) => {
     } else if (!timer.active && timerRef.current) {
       clearInterval(timerRef.current);
     }
-
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
@@ -696,11 +678,22 @@ const Program = ({ setCurrentView }) => {
     };
   }, [timer.active, timer.seconds]);
 
-  useLayoutEffect(() => { // Changed to useLayoutEffect to fix centering scroll on mobile
-    if (weekButtonsContainerRef.current) {
-      const activeWeekButton = weekButtonsContainerRef.current.querySelector('.week-button.active');
-      if (activeWeekButton) {
-        activeWeekButton.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  // 👇 Effetto per centrare perfettamente il bottone attivo + indicatore visivo
+  useLayoutEffect(() => {
+    if (weekButtonsContainerRef.current && activeWeekButtonRef.current) {
+      const container = weekButtonsContainerRef.current;
+      const activeButton = activeWeekButtonRef.current;
+
+      if (activeButton) {
+        // Calcola la posizione centrale
+        const containerRect = container.getBoundingClientRect();
+        const buttonRect = activeButton.getBoundingClientRect();
+        const containerCenter = containerRect.left + containerRect.width / 2;
+        const buttonCenter = buttonRect.left + buttonRect.width / 2;
+
+        // Scrolla in modo che il bottone sia al centro
+        const scrollOffset = buttonCenter - containerCenter;
+        container.scrollLeft += scrollOffset;
       }
     }
   }, [currentWeek]);
@@ -719,7 +712,6 @@ const Program = ({ setCurrentView }) => {
     const key = activeExerciseKeyInPopup;
     const currentProgress = completed[key] || { completedSeriesCount: 0 };
     const { serie: totalSeries, pausa, nome: exerciseName } = exercise;
-
     const newCompletedSeriesCount = currentProgress.completedSeriesCount + 1;
     const newIsFinished = newCompletedSeriesCount === totalSeries;
 
@@ -774,13 +766,13 @@ const Program = ({ setCurrentView }) => {
   const toggleSection = (sectionName) => {
     setExpandedSection(expandedSection === sectionName ? null : sectionName);
   };
-  
+
   const overviewSections = [
-        { title: "1️⃣ Introduzione", content: "Benvenuta nel tuo percorso di trasformazione di 12 settimane! Questo programma è stato creato per aiutarti a costruire forza, resistenza e a raggiungere i tuoi obiettivi di fitness, il tutto utilizzando le pratiche fasce elastiche. Preparati a sfidare il tuo corpo e a vedere risultati reali!" },
-        { title: "2️⃣ Guida alle Fasce Elastiche", content: "Le fasce elastiche sono il tuo strumento segreto per un allenamento efficace. Il programma utilizza fasce ad anello chiuso da 60 cm, disponibili in diversi livelli di resistenza. Ogni colore corrisponde a un peso (verde: 2,27 kg; blu: 4,54 kg; gialla: 9,07 kg; rossa: 13,62 kg; nera: 18,16 kg). Utilizzarle correttamente ti garantirà il massimo beneficio per ogni esercizio! Ricorda che per alcuni esercizi che coinvolgono spinte verticali con carichi molto elevati (come la Military Press), le fasce da 60 cm potrebbero non essere ottimali come le fasce tubolari con maniglie, ma possono essere comunque utilizzate con il giusto posizionamento sotto i piedi." },
-        { title: "3️⃣ Struttura del Programma", content: "Il programma è strategicamente diviso in 3 fasi da 4 settimane ciascuna. Ogni fase è progettata per progredire in termini di intensità e complessità, assicurandoti di costruire una base solida e di avanzare costantemente verso i tuoi obiettivi. Segui la progressione per massimizzare i risultati e prevenire stalli." },
-        { title: "4️⃣ Riscaldamento", type: 'warmup' },
-        { title: "5️⃣ Defaticamento", type: 'cooldown' },
+    { title: "1️⃣ Introduzione", content: "Benvenuta nel tuo percorso di trasformazione di 12 settimane! Questo programma è stato creato per aiutarti a costruire forza, resistenza e a raggiungere i tuoi obiettivi di fitness, il tutto utilizzando le pratiche fasce elastiche. Preparati a sfidare il tuo corpo e a vedere risultati reali!" },
+    { title: "2️⃣ Guida alle Fasce Elastiche", content: "Le fasce elastiche sono il tuo strumento segreto per un allenamento efficace. Il programma utilizza fasce ad anello chiuso da 60 cm, disponibili in diversi livelli di resistenza. Ogni colore corrisponde a un peso (verde: 2,27 kg; blu: 4,54 kg; gialla: 9,07 kg; rossa: 13,62 kg; nera: 18,16 kg). Utilizzarle correttamente ti garantirà il massimo beneficio per ogni esercizio! Ricorda che per alcuni esercizi che coinvolgono spinte verticali con carichi molto elevati (come la Military Press), le fasce da 60 cm potrebbero non essere ottimali come le fasce tubolari con maniglie, ma possono essere comunque utilizzate con il giusto posizionamento sotto i piedi." },
+    { title: "3️⃣ Struttura del Programma", content: "Il programma è strategicamente diviso in 3 fasi da 4 settimane ciascuna. Ogni fase è progettata per progredire in termini di intensità e complessità, assicurandoti di costruire una base solida e di avanzare costantemente verso i tuoi obiettivi. Segui la progressione per massimizzare i risultati e prevenire stalli." },
+    { title: "4️⃣ Riscaldamento", type: 'warmup' },
+    { title: "5️⃣ Defaticamento", type: 'cooldown' },
   ];
 
   return (
@@ -788,7 +780,6 @@ const Program = ({ setCurrentView }) => {
       <style>
         {`
           @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
-         
           :root {
             --primary: #0066ff;
             --primary-dark: #004cbb;
@@ -806,7 +797,6 @@ const Program = ({ setCurrentView }) => {
             --radius-md: 1.25rem;
             --radius-sm: 0.75rem;
           }
-
           body {
             margin: 0;
             font-family: 'Poppins', sans-serif;
@@ -816,7 +806,6 @@ const Program = ({ setCurrentView }) => {
             background-attachment: fixed;
             overflow-x: hidden;
           }
-
           .program-container {
             min-height: 100vh;
             padding: 1.5rem;
@@ -825,18 +814,16 @@ const Program = ({ setCurrentView }) => {
             align-items: center;
             position: relative;
           }
-
           .program-container::before {
             content: '';
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PHBhdGggZD0iTTEwIDBoLTEwdi0xMCBMMCAyMC41IDMuNSAyNCAwIDMwIDAgNDAgNSA0NSA1IDM1IDEwIDMwIDEwIDIwIDE1IDI1IDE1IDE1IDEwIDEwek0yMCAwaC0xMHYxMGgxMHYtMTB6bTEwIDBoLTEwdjEwaDEwdi0xMHptMTAgMGgtMTB2MTBoMTB2LTEwemm1MCAwaC0xMHYxMGgxMHYtMTB6bTEwIDBoLTEwdjEwaDEwdi0xMHptMTAgMGgtMTB2MTBoMTB2LTEwek0wIDMwdi0xMGgxMHYxMGgtMTB6bTEwIDBoLTEwdjEwaDEwdi0xMHptMTAgMGgtMTB2MTBoMTB2LTEwemm10IDBoLTEwdjEwaDEwdi0xMHptMTAgMGgtMTB2MTBoMTB2LTEwemm1MCAwaC0xMHYxMGgxMHYtTAwek00MCAwdi0xMGgxMHYxMHoiIGZpbGw9IiNmZmZmZmYwMSIvPjwvc3ZnPg==');
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PHBhdGggZD0iTTEwIDBoLTEwdi0xMCBMMCAyMC41IDMuNSAyNCAwIDMwIDAgNDAgNSA0NSA1IDM1IDEwIDMwIDEwIDIwIDE1IDI1IDE1IDE1IDEwIDEwek0yMCAwaC0xMHYxMGgxMHYtMTB6bTEwIDBoLTEwdjEwaDEwdi0xMHptMTAgMGgtMTB2MTBoMTB2LTEwemm1MCAwaC0xMHYxMGgxMHYtMTB6bTEwIDBoLTEwdjEwaDEwdi0xMHptMTAgMGgtMTB2MTBoMTB2LTEwek0wIDMwdi0xMGgxMHYxMGgtMTB6bTEwIDBoLTEwdjEwaDEwdi0xMHptMTAgMGgtMTB2MTBoMTB2LTEwemm10IDBoLTEwdjEwaDEwdi0xMHptMTAgMGgtMTB2MTBoMTB2LTEwemm1MCAwaC0xMHYxMGgxMHYtTAWek00MCAwdi0xMGgxMHYxMHoiIGZpbGw9IiNmZmZmZmYwMSIvPjwvc3ZnPg==');
             opacity: 0.03;
             pointer-events: none;
             z-index: -1;
           }
-
           .header-section {
             width: 100%;
             max-width: 1200px;
@@ -855,7 +842,6 @@ const Program = ({ setCurrentView }) => {
             position: relative;
             overflow: hidden;
           }
-
           .header-section::after {
             content: '';
             position: absolute;
@@ -865,12 +851,10 @@ const Program = ({ setCurrentView }) => {
             pointer-events: none;
             animation: shine 4s ease-in-out infinite;
           }
-
           @keyframes shine {
             0% { transform: translateX(-100%); }
             100% { transform: translateX(100%); }
           }
-
           .header-title {
             font-size: 2.8rem;
             font-weight: 900;
@@ -886,7 +870,6 @@ const Program = ({ setCurrentView }) => {
               width: 100%;
             }
           }
-
           .dashboard-button, .progress-button {
             padding: 1rem 2.2rem;
             color: white;
@@ -900,7 +883,6 @@ const Program = ({ setCurrentView }) => {
             position: relative;
             z-index: 2;
           }
-
           .dashboard-button {
              background: linear-gradient(135deg, var(--secondary), #cc5a00);
              box-shadow: 0 8px 20px rgba(255, 107, 0, 0.4);
@@ -912,7 +894,6 @@ const Program = ({ setCurrentView }) => {
            .dashboard-button:active {
             transform: translateY(-2px);
           }
-         
           .progress-button {
              background: linear-gradient(135deg, var(--accent), #00b368);
              box-shadow: 0 8px 20px rgba(0, 224, 128, 0.4);
@@ -924,7 +905,6 @@ const Program = ({ setCurrentView }) => {
            .progress-button:active {
             transform: translateY(-2px);
           }
-
           .program-overview-card, .workout-card {
             width: 100%;
             max-width: 1200px;
@@ -938,12 +918,10 @@ const Program = ({ setCurrentView }) => {
             transition: var(--transition);
             overflow: hidden;
           }
-
           .program-overview-card:hover, .workout-card:hover {
             transform: translateY(-6px);
             box-shadow: var(--shadow-lg);
           }
-
           .overview-title, .workouts-title, .workout-day-title {
             font-size: 2.2rem;
             font-weight: 800;
@@ -952,7 +930,6 @@ const Program = ({ setCurrentView }) => {
             text-align: center;
             position: relative;
           }
-
           .overview-title::after, .workouts-title::after, .workout-day-title::after {
             content: '';
             position: absolute;
@@ -964,7 +941,6 @@ const Program = ({ setCurrentView }) => {
             background: linear-gradient(90deg, var(--secondary), var(--accent));
             border-radius: 10px;
           }
-
           .section-item {
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             padding: 1.2rem 0;
@@ -972,7 +948,6 @@ const Program = ({ setCurrentView }) => {
           .section-item:last-child {
             border-bottom: none;
           }
-
           .section-button {
             display: flex;
             justify-content: space-between;
@@ -988,23 +963,19 @@ const Program = ({ setCurrentView }) => {
             padding: 0.6rem 0;
             transition: var(--transition);
           }
-
           .section-button:hover {
             color: var(--accent);
             transform: translateX(8px);
           }
-
           .section-button span {
             font-size: 0.9rem;
             color: var(--gray);
             transition: transform 0.3s ease;
           }
-
           .section-button span.rotated {
             transform: rotate(180deg);
             color: var(--accent);
           }
-
           .section-content {
             margin-top: 1rem;
             color: rgba(255, 255, 255, 0.9);
@@ -1012,18 +983,15 @@ const Program = ({ setCurrentView }) => {
             line-height: 1.8;
             font-weight: 400;
           }
-
           .section-content ul {
             list-style: none;
             padding-left: 0;
           }
-
           .section-content li {
             position: relative;
             padding-left: 1.8rem;
             margin: 0.6rem 0;
           }
-          
           .section-content li.clickable-list-item {
              cursor: pointer;
              transition: all 0.2s ease-in-out;
@@ -1031,13 +999,11 @@ const Program = ({ setCurrentView }) => {
              border-radius: var(--radius-sm);
              margin-left: -0.8rem;
           }
-          
           .section-content li.clickable-list-item:hover {
               background-color: rgba(0, 224, 128, 0.15);
               color: var(--accent);
               transform: translateX(5px);
           }
-
           .section-content li::before {
             content: '•';
             color: var(--accent);
@@ -1047,11 +1013,9 @@ const Program = ({ setCurrentView }) => {
             top: 50%;
             transform: translateY(-50%);
           }
-          
            .section-content li.clickable-list-item::before {
              top: calc(50% + 0.1rem);
            }
-           
           .section-content p {
             margin-bottom: 1em;
           }
@@ -1059,7 +1023,6 @@ const Program = ({ setCurrentView }) => {
             color: var(--accent);
             font-weight: 600;
           }
-         
           .details-hint-message {
             text-align: center;
             font-size: 0.95rem;
@@ -1067,7 +1030,6 @@ const Program = ({ setCurrentView }) => {
             color: rgba(255, 255, 255, 0.7);
             font-style: italic;
           }
-
           .details-hint-message .link {
             color: var(--accent);
             text-decoration: underline;
@@ -1075,19 +1037,23 @@ const Program = ({ setCurrentView }) => {
             font-weight: 600;
             transition: color 0.2s ease;
           }
-
           .details-hint-message .link:hover {
             color: var(--light);
           }
 
+          /* 👇 SEZIONE AGGIORNATA PER I PULSANTI DELLE SETTIMANE */
           .week-selector-container {
             width: 100%;
-            max-width: 1200px;
+            max-width: 100%;
             overflow-x: auto;
             margin-bottom: 2.5rem;
-            display: flex; /* MODIFICA: Aggiunto per permettere il centraggio del wrapper interno */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0 1rem;
             scrollbar-width: thin;
             scrollbar-color: var(--secondary) transparent;
+            position: relative;
           }
           .week-selector-container::-webkit-scrollbar {
             height: 6px;
@@ -1100,17 +1066,14 @@ const Program = ({ setCurrentView }) => {
             background: var(--secondary);
             border-radius: 3px;
           }
-
           .week-buttons-wrapper {
             display: flex;
-            gap: 1.2rem;
-            padding: 0.8rem 24px; 
+            gap: 1rem;
+            padding: 0.8rem 0.5rem;
             min-width: fit-content;
-            margin: 0 auto; /* MODIFICA: Centra il wrapper. Sostituisce justify-content */
           }
-
           .week-button {
-            padding: 1rem 2rem;
+            padding: 1rem 1.8rem;
             border-radius: var(--radius-md);
             font-weight: 700;
             font-size: 1.1rem;
@@ -1121,8 +1084,8 @@ const Program = ({ setCurrentView }) => {
             cursor: pointer;
             transition: var(--transition);
             white-space: nowrap;
+            position: relative;
           }
-
           .week-button.active {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
@@ -1130,23 +1093,36 @@ const Program = ({ setCurrentView }) => {
             transform: translateY(-3px) scale(1.05);
             font-weight: 800;
           }
-
+          .week-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 2px;
+            animation: glowPulse 2s infinite alternate;
+          }
+          @keyframes glowPulse {
+            0% { opacity: 0.7; transform: translateX(-50%) scale(1); }
+            100% { opacity: 1; transform: translateX(-50%) scale(1.05); }
+          }
           .week-button:hover:not(.active) {
             background: rgba(255, 255, 255, 0.2);
             transform: translateY(-2px);
             box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
           }
-          
+
           .workouts-section {
             width: 100%;
             max-width: 1200px;
           }
-
           .workout-day-title {
             font-size: 1.9rem;
             color: var(--light);
           }
-
           .exercise-item {
             display: flex;
             flex-direction: column;
@@ -1158,13 +1134,11 @@ const Program = ({ setCurrentView }) => {
             transition: var(--transition);
             margin-bottom: 0.8rem;
           }
-
           .exercise-item.active-exercise {
             border-color: var(--primary);
             box-shadow: 0 0 15px rgba(0, 102, 255, 0.7);
             transform: scale(1.01);
           }
-
           @media (min-width: 640px) {
             .exercise-item {
               flex-direction: row;
@@ -1172,13 +1146,11 @@ const Program = ({ setCurrentView }) => {
               align-items: center;
             }
           }
-
           .exercise-item:hover:not(.active-exercise) {
             background: rgba(255, 255, 255, 0.15);
             transform: translateX(6px);
             border-left: 3px solid var(--accent);
           }
-
           .exercise-details-clickable-area {
             flex-grow: 1;
             cursor: pointer;
@@ -1191,7 +1163,6 @@ const Program = ({ setCurrentView }) => {
           .exercise-details-clickable-area:hover .exercise-name-display {
             color: var(--accent);
           }
-
           .exercise-name-display {
             transition: color 0.3s ease;
             font-weight: 600;
@@ -1203,13 +1174,11 @@ const Program = ({ setCurrentView }) => {
             font-weight: 600;
             opacity: 0.8;
           }
-
           .series-indicator-group {
             display: flex;
             gap: 0.4rem;
             margin-left: 0.8rem;
           }
-
           .series-dot {
             width: 12px;
             height: 12px;
@@ -1218,29 +1187,24 @@ const Program = ({ setCurrentView }) => {
             background-color: transparent;
             transition: all 0.2s ease-in-out;
           }
-
           .series-dot.completed-dot {
             background-color: var(--accent);
             border-color: var(--accent);
           }
-
           .series-dot.active-dot {
             background: linear-gradient(45deg, var(--primary), var(--primary-dark));
             border-color: var(--primary);
             animation: pulse-active-dot 1s infinite alternate;
           }
-
           @keyframes pulse-active-dot {
             0% { transform: scale(1); opacity: 1; }
             100% { transform: scale(1.1); opacity: 0.8; }
           }
-
           .exercise-buttons-group {
             display: flex;
             gap: 1rem;
             flex-wrap: wrap;
           }
-
           .exercise-button {
             padding: 0.7rem 1.4rem;
             border-radius: var(--radius-sm);
@@ -1258,44 +1222,36 @@ const Program = ({ setCurrentView }) => {
             justify-content: center;
             color: white;
           }
-
           .exercise-button.disabled {
             background: rgba(255, 255, 255, 0.1);
             color: rgba(255, 255, 255, 0.5);
             cursor: not-allowed;
             box-shadow: none;
           }
-
           .exercise-button:not(.disabled) {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
           }
-
           .exercise-button.timer-active {
             background: linear-gradient(135deg, var(--secondary), #cc5a00);
             animation: pulse 1.5s infinite;
           }
-
           @keyframes pulse {
             0% { box-shadow: 0 0 0 0 rgba(255, 107, 0, 0.4); }
             70% { box-shadow: 0 0 0 8px rgba(255, 107, 0, 0); }
             100% { box-shadow: 0 0 0 0 rgba(255, 107, 0, 0); }
           }
-
           .exercise-button:not(.disabled):hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 16px rgba(0, 102, 255, 0.3);
           }
-
           .youtube-button {
             background: linear-gradient(135deg, #e60000, #b30000);
           }
-
           .youtube-button:hover:not(.disabled) {
             transform: translateY(-3px);
             box-shadow: 0 6px 16px rgba(230, 0, 0, 0.35);
           }
-
           .popup-overlay {
             position: fixed;
             inset: 0;
@@ -1307,7 +1263,6 @@ const Program = ({ setCurrentView }) => {
             backdrop-filter: blur(4px);
             padding: 1rem;
           }
-
           .popup-content {
             background: rgba(255, 255, 255, 0.98);
             color: var(--dark);
@@ -1321,7 +1276,6 @@ const Program = ({ setCurrentView }) => {
             position: relative;
             overflow: hidden;
           }
-
           .popup-content::before {
             content: '';
             position: absolute;
@@ -1329,21 +1283,18 @@ const Program = ({ setCurrentView }) => {
             width: 100%; height: 5px;
             background: linear-gradient(90deg, var(--secondary), var(--accent));
           }
-
           .popup-content h3 {
             font-size: 1.8rem;
             color: var(--primary);
             margin-bottom: 1rem;
             font-weight: 800;
           }
-
           .popup-content p {
             margin-bottom: 1.5rem;
             color: #333;
             font-size: 1.1rem;
             line-height: 1.6;
           }
-
           .popup-link {
             color: #e60000;
             text-decoration: none;
@@ -1354,7 +1305,6 @@ const Program = ({ setCurrentView }) => {
           .popup-link:hover {
             text-decoration: underline;
           }
-
           .popup-button-close, .popup-break-end-button {
             padding: 0.8rem 1.8rem;
             border: none;
@@ -1365,7 +1315,6 @@ const Program = ({ setCurrentView }) => {
             color: white;
             margin-top: 1rem;
           }
-
           .popup-button-close {
             background: #6c757d;
           }
@@ -1373,7 +1322,6 @@ const Program = ({ setCurrentView }) => {
             background: #5a6268;
             transform: translateY(-2px);
           }
-
           .popup-break-end-button {
             background: linear-gradient(135deg, var(--accent), #00b368);
           }
@@ -1381,7 +1329,6 @@ const Program = ({ setCurrentView }) => {
             transform: translateY(-2px);
             box-shadow: 0 6px 14px rgba(0, 224, 128, 0.4);
           }
-
           .exercise-control-popup {
             padding: 2rem 1.5rem;
           }
@@ -1400,7 +1347,6 @@ const Program = ({ setCurrentView }) => {
             margin-top: 1.5rem;
             width: 100%;
           }
-
           .exercise-popup-info {
             font-size: 0.95rem;
             text-align: left;
@@ -1478,31 +1424,32 @@ const Program = ({ setCurrentView }) => {
           ))}
         </motion.div>
 
+        {/* 👇 CONTAINER SETTIMANE */}
         <motion.div
-            initial={{ y: 40, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-            className="week-selector-container"
-            ref={weekButtonsContainerRef}
+          initial={{ y: 40, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.4, duration: 0.8 }}
+          className="week-selector-container"
+          ref={weekButtonsContainerRef}
         >
-            <div className="week-buttons-wrapper">
-                {programma.map((w, idx) => (
-                <motion.button
-                    key={w.settimana}
-                    onClick={() => setCurrentWeek(idx)}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 + idx * 0.05, duration: 0.4 }}
-                    whileHover={{ y: -3, scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className={`week-button ${currentWeek === idx ? "active" : ""}`}
-                >
-                    Settimana {w.settimana}
-                </motion.button>
-                ))}
-            </div>
+          <div className="week-buttons-wrapper">
+            {programma.map((w, idx) => (
+              <motion.button
+                key={w.settimana}
+                ref={currentWeek === idx ? activeWeekButtonRef : null} // 👈 Assegna il ref solo al bottone attivo
+                onClick={() => setCurrentWeek(idx)}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 + idx * 0.05, duration: 0.4 }}
+                whileHover={{ y: -3, scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className={`week-button ${currentWeek === idx ? "active" : ""}`}
+              >
+                Settimana {w.settimana}
+              </motion.button>
+            ))}
+          </div>
         </motion.div>
-
 
         <div className="workouts-section">
           <h2 className="workouts-title">
@@ -1547,7 +1494,6 @@ const Program = ({ setCurrentView }) => {
                         isCurrentActive={hasStartedCurrentSeries && completedSeriesCount < ex.serie}
                       />
                     </div>
-
                     <div className="exercise-buttons-group">
                        {!isFinished && (
                           <motion.button
