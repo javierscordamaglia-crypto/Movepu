@@ -9,8 +9,8 @@ import {
   sendEmailVerification
 } from "firebase/auth";
 
-// --- Codice di Attivazione Unico ---
-const MASTER_ACCESS_CODE = "MOVEUP-ITALIA-2025"; // Puoi cambiarlo quando vuoi
+// --- Codice di Attivazione Unico (meno intuibile, semplice da digitare) ---
+const MASTER_ACCESS_CODE = "MU-8XKQ-2025"; // Cambialo quando vuoi
 
 // --- COMPONENTE POPUP DI ATTIVAZIONE (MOSTRATO ALL'APERTURA DEL SITO) ---
 const ActivationGate = ({ children }) => {
@@ -38,13 +38,14 @@ const ActivationGate = ({ children }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
+        transition={{ duration: 0.6 }}
         style={{
           position: 'fixed',
           top: 0,
           left: 0,
           width: '100vw',
           height: '100vh',
-          background: 'linear-gradient(135deg, #0f1b3a 0%, #1a365d 50%, #0066ff 100%)',
+          background: 'linear-gradient(135deg, #0f1b3a 0%, #1a365d 50%, #0055aa 100%)',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
@@ -54,108 +55,146 @@ const ActivationGate = ({ children }) => {
         }}
       >
         <motion.div
-          initial={{ scale: 0.95, y: 20 }}
+          initial={{ scale: 0.92, y: 30 }}
           animate={{ scale: 1, y: 0 }}
-          exit={{ scale: 0.95, y: 20 }}
+          exit={{ scale: 0.92, y: 30 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
           className="login-card"
           style={{
-            background: 'rgba(255, 255, 255, 0.12)',
-            backdropFilter: 'blur(25px)',
-            padding: '2.5rem',
-            borderRadius: '2rem',
+            background: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(30px)',
+            padding: '3rem',
+            borderRadius: '2.5rem',
             textAlign: 'center',
             color: 'white',
-            maxWidth: '450px',
+            maxWidth: '480px',
             width: '100%',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-            boxShadow: '0 25px 50px rgba(0, 102, 255, 0.2)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 30px 60px rgba(0, 85, 170, 0.25)',
           }}
         >
-          <h2 style={{ fontSize: '1.8rem', fontWeight: '700', marginBottom: '0.5rem' }}>
-            Benvenuto in Move Up 🌿
+          {/* 🌀 Icona animata fluttuante */}
+          <motion.div
+            animate={{ y: [0, -10, 0] }}
+            transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+            style={{ marginBottom: '1.5rem' }}
+          >
+            <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+              <path d="M32 8L52 28H44V52H20V28H12L32 8Z" fill="url(#grad1)" />
+              <defs>
+                <linearGradient id="grad1" x1="32" y1="8" x2="32" y2="52" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#4facfe" />
+                  <stop offset="1" stopColor="#00f2fe" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </motion.div>
+
+          <h2 style={{ fontSize: '2rem', fontWeight: '800', marginBottom: '0.5rem', letterSpacing: '-0.5px' }}>
+            Benvenuto in <span style={{ background: 'linear-gradient(90deg, #4facfe, #00f2fe)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Move Up</span>
           </h2>
-          <p style={{ fontSize: '0.95rem', color: '#d0d8eb', marginBottom: '1.5rem', lineHeight: '1.5' }}>
-            Grazie per aver scelto il nostro prodotto. Per accedere all’esperienza esclusiva, inserisci il codice di attivazione trovato nella confezione.
+          <p style={{ fontSize: '1rem', color: '#c5d0eb', marginBottom: '2rem', lineHeight: '1.6', fontWeight: '300' }}>
+            Per accedere all’esperienza esclusiva, inserisci il codice di attivazione presente nella confezione del prodotto.
           </p>
-          <form onSubmit={handleSubmit} style={{ marginBottom: '1.5rem' }}>
+
+          <form onSubmit={handleSubmit} style={{ marginBottom: '2rem' }}>
             <input
               type="text"
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder="ES. MOVEUP-ITALIA-2025"
+              placeholder="Guarda nella confezione del prodotto"
               className="auth-input"
               style={{
                 width: '100%',
-                padding: '1rem',
-                borderRadius: '0.75rem',
-                border: '1px solid rgba(255, 255, 255, 0.3)',
-                background: 'rgba(255, 255, 255, 0.08)',
+                padding: '1.25rem',
+                borderRadius: '1rem',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                background: 'rgba(0, 30, 70, 0.3)',
                 color: 'white',
-                fontSize: '1rem',
+                fontSize: '1.05rem',
                 textTransform: 'uppercase',
-                letterSpacing: '1px',
+                letterSpacing: '2px',
                 textAlign: 'center',
                 boxSizing: 'border-box',
+                fontWeight: '500',
               }}
               required
               autoFocus
             />
             {error && (
-              <div
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
                 style={{
-                  marginTop: '1rem',
-                  padding: '0.75rem',
-                  borderRadius: '0.5rem',
-                  background: 'rgba(255, 200, 100, 0.1)',
+                  marginTop: '1.25rem',
+                  padding: '0.85rem',
+                  borderRadius: '0.75rem',
+                  background: 'rgba(255, 200, 100, 0.12)',
                   color: '#ffd166',
-                  fontSize: '0.85rem',
+                  fontSize: '0.9rem',
                   fontWeight: '500',
-                  border: '1px solid rgba(255, 200, 100, 0.3)',
+                  border: '1px solid rgba(255, 200, 100, 0.25)',
                 }}
               >
                 {error}
-              </div>
+              </motion.div>
             )}
             <motion.button
               type="submit"
-              className="auth-button"
-              whileHover={{ scale: 1.02 }}
+              whileHover={{ scale: 1.03, boxShadow: "0 12px 30px rgba(0, 242, 254, 0.4)" }}
               whileTap={{ scale: 0.98 }}
               style={{
                 width: '100%',
-                marginTop: '1.25rem',
+                marginTop: '1.5rem',
+                padding: '1.1rem 0',
+                borderRadius: '1.25rem',
+                border: 'none',
                 background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                color: 'white',
+                fontSize: '1.1rem',
                 fontWeight: '600',
+                cursor: 'pointer',
+                boxShadow: '0 8px 25px rgba(79, 172, 254, 0.3)',
+                transition: 'all 0.3s ease',
               }}
             >
-              Attiva la mia esperienza
+              ✨ Attiva la mia esperienza
             </motion.button>
           </form>
 
-          {/* 📜 Avviso legale — tono soft ma chiaro */}
+          {/* 📜 Avviso legale — tono soft, elegante */}
           <div
             style={{
-              background: 'rgba(100, 120, 180, 0.1)',
-              border: '1px solid rgba(120, 140, 200, 0.2)',
-              borderRadius: '0.75rem',
-              padding: '1rem',
-              fontSize: '0.75rem',
-              color: 'rgba(220, 230, 255, 0.85)',
-              lineHeight: '1.5',
+              background: 'rgba(90, 100, 140, 0.15)',
+              border: '1px solid rgba(110, 120, 160, 0.2)',
+              borderRadius: '1rem',
+              padding: '1.25rem',
+              fontSize: '0.8rem',
+              color: 'rgba(210, 220, 255, 0.8)',
+              lineHeight: '1.6',
               fontStyle: 'italic',
               marginTop: '1.5rem',
             }}
           >
-            <strong style={{ color: '#a0b0ff' }}>Nota importante:</strong> questo codice è personale e associato al prodotto acquistato. 
+            <strong style={{ color: '#a0b0ff', fontWeight: '500' }}>Nota per te:</strong> questo codice è personale e unico. 
             La sua condivisione non autorizzata viola i nostri Termini d’Uso e la normativa sul diritto d’autore. 
-            Ti ringraziamo per il rispetto della proprietà intellettuale.
+            Grazie per proteggere con noi il valore del prodotto che hai scelto.
           </div>
         </motion.div>
       </motion.div>
     );
   }
 
-  return <>{children}</>;
+  // ✅ Transizione fluida quando si passa dal popup al login
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {children}
+    </motion.div>
+  );
 };
 
 // --- IL TUO COMPONENTE LOGIN ORIGINALE (SENZA MODIFICHE FUNZIONALI) ---
@@ -446,7 +485,7 @@ const Login = ({ setCurrentView, setUserName }) => {
                   <input
                     name="accessCode"
                     type="text"
-                    placeholder="Il tuo codice di attivazione"
+                    placeholder="Guarda nella confezione"
                     className="auth-input"
                     style={{ textTransform: 'uppercase' }}
                     required
@@ -505,7 +544,7 @@ const Login = ({ setCurrentView, setUserName }) => {
                     <motion.input
                       key="accessCode"
                       type="text"
-                      placeholder="Codice di Attivazione"
+                      placeholder="Guarda nella confezione"
                       value={accessCode}
                       onChange={(e) => setAccessCode(e.target.value)}
                       className="auth-input"
