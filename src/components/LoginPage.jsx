@@ -1,18 +1,23 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  getAuth, 
-  GoogleAuthProvider, 
+import {
+  getAuth,
+  GoogleAuthProvider,
   signInWithPopup,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendEmailVerification
 } from "firebase/auth";
 
+// --- Codice di Attivazione Unico ---
+// CAMBIA QUESTO CODICE CON QUELLO CHE VUOI USARE
+const MASTER_ACCESS_CODE = "MOVEUP2025"; 
+
 const Login = ({ setCurrentView, setUserName }) => {
   const [isLoginView, setIsLoginView] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [accessCode, setAccessCode] = useState(''); // Stato per il codice di attivazione
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(null);
   const [verificationSent, setVerificationSent] = useState(false);
@@ -27,7 +32,16 @@ const Login = ({ setCurrentView, setUserName }) => {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-      if (user) {
+      
+      // Controlla se è un nuovo utente Google
+      const isNewUser = result._tokenResponse.isNewUser;
+      if (isNewUser) {
+        // Per i nuovi utenti Google, per ora diamo accesso diretto.
+        // Una logica più complessa richiederebbe un popup per inserire il codice.
+        setUserName(user.displayName || user.email?.split('@')[0] || 'Atleta');
+        setCurrentView('dashboard');
+      } else {
+        // Utente già esistente, accesso diretto
         setUserName(user.displayName || user.email?.split('@')[0] || 'Atleta');
         setCurrentView('dashboard');
       }
@@ -41,7 +55,7 @@ const Login = ({ setCurrentView, setUserName }) => {
 
   // Gestisce il login/registrazione con Email e Password
   const handleEmailAuth = async (e) => {
-    e.preventDefault(); // Previene il ricaricamento della pagina
+    e.preventDefault();
     setLoading('email');
     setError(null);
     setVerificationSent(false);
@@ -51,34 +65,37 @@ const Login = ({ setCurrentView, setUserName }) => {
       if (isLoginView) {
         // --- Accesso ---
         await signInWithEmailAndPassword(auth, email, password);
-        // Il listener in App.jsx gestirà il reindirizzamento
       } else {
         // --- Registrazione ---
+        // 1. Controlla il codice di attivazione
+        if (accessCode.toUpperCase() !== MASTER_ACCESS_CODE) {
+            throw new Error("Codice di Attivazione non valido.");
+        }
+        
+        // 2. Se il codice è valido, crea l'utente
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        // Invia l'email di verifica
         await sendEmailVerification(userCredential.user);
-        setVerificationSent(true); // Mostra il messaggio di successo
-        // Il listener in App.jsx gestirà il reindirizzamento alla dashboard
+        setVerificationSent(true);
       }
     } catch (err) {
       let errorMessage = "Si è verificato un errore. Riprova.";
-      switch (err.code) {
-        case 'auth/email-already-in-use':
-          errorMessage = "Questa email è già registrata.";
-          break;
-        case 'auth/invalid-email':
-          errorMessage = "L'indirizzo email non è valido.";
-          break;
-        case 'auth/weak-password':
-          errorMessage = "La password deve contenere almeno 6 caratteri.";
-          break;
-        case 'auth/user-not-found':
-        case 'auth/wrong-password':
-        case 'auth/invalid-credential':
-          errorMessage = "Email o password errati.";
-          break;
-        default:
-          console.error("Errore di autenticazione email:", err);
+      if (err.message === "Codice di Attivazione non valido.") {
+          errorMessage = err.message;
+      } else {
+         switch (err.code) {
+            case 'auth/email-already-in-use':
+              errorMessage = "Questa email è già registrata."; break;
+            case 'auth/invalid-email':
+              errorMessage = "L'indirizzo email non è valido."; break;
+            case 'auth/weak-password':
+              errorMessage = "La password deve contenere almeno 6 caratteri."; break;
+            case 'auth/user-not-found':
+            case 'auth/wrong-password':
+            case 'auth/invalid-credential':
+              errorMessage = "Email o password errati."; break;
+            default:
+              console.error("Errore di autenticazione email:", err);
+          }
       }
       setError(errorMessage);
     } finally {
@@ -155,6 +172,10 @@ const Login = ({ setCurrentView, setUserName }) => {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(0, 102, 255, 0.3);
           }
+           .auth-button:disabled {
+            background: #555;
+            cursor: not-allowed;
+           }
           .toggle-button {
             background: none;
             border: none;
@@ -219,6 +240,7 @@ const Login = ({ setCurrentView, setUserName }) => {
           }
         `}
       </style>
+      
       <div className="login-container">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
@@ -227,7 +249,7 @@ const Login = ({ setCurrentView, setUserName }) => {
           className="login-card"
         >
           <h1 className="login-title">Move Up</h1>
-          <p className="login-subtitle">{isLoginView ? 'Accedi per continuare' : 'Crea un nuovo account'}</p>
+          <p className="login-subtitle">{isLoginView ? 'Accedi per continuare' : 'Crea il tuo account'}</p>
           
           <AnimatePresence mode="wait">
             <motion.div
@@ -254,6 +276,22 @@ const Login = ({ setCurrentView, setUserName }) => {
                   className="auth-input"
                   required
                 />
+                {/* --- NUOVO CAMPO VISIBILE SOLO IN REGISTRAZIONE --- */}
+                {!isLoginView && (
+                    <motion.input
+                        key="accessCode"
+                        type="text"
+                        placeholder="Codice di Attivazione"
+                        value={accessCode}
+                        onChange={(e) => setAccessCode(e.target.value)}
+                        className="auth-input"
+                        required
+                        style={{ textTransform: 'uppercase' }}
+                        initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                        animate={{ opacity: 1, height: 'auto', marginTop: '1rem' }}
+                        exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                    />
+                )}
                 <motion.button
                   type="submit"
                   disabled={loading === 'email'}
@@ -272,7 +310,7 @@ const Login = ({ setCurrentView, setUserName }) => {
           </button>
 
           {error && <div className="feedback-message error">{error}</div>}
-          {verificationSent && <div className="feedback-message success">Registrazione completata! Controlla la tua casella di posta per l'email di verifica.</div>}
+          {verificationSent && <div className="feedback-message success">Account creato! Controlla la tua casella di posta per l'email di verifica.</div>}
 
           <div className="separator">o</div>
 
@@ -284,7 +322,7 @@ const Login = ({ setCurrentView, setUserName }) => {
             className="google-login-button"
           >
             <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google Icon" className="google-icon" />
-            {loading === 'google' ? 'Caricamento...' : 'Accedi con Google'}
+            {loading === 'google' ? 'Caricamento...' : 'Continua con Google'}
           </motion.button>
         </motion.div>
       </div>
