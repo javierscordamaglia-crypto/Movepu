@@ -11,18 +11,73 @@ import {
 
 // --- Codice di Attivazione Unico ---
 // CAMBIA QUESTO CODICE CON QUELLO CHE VUOI USARE
-const MASTER_ACCESS_CODE = "MOVEUP2025"; 
+const MASTER_ACCESS_CODE = "MOVEUP2025";
+
+// --- COMPONENTE POPUP PER INSERIRE IL CODICE DI ATTIVAZIONE (PER UTENTI GOOGLE) ---
+const AccessCodePopup = ({ onSubmit, onCancel, error, loading }) => (
+    <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'rgba(0,0,0,0.7)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000,
+            fontFamily: "'Poppins', sans-serif",
+        }}
+    >
+        <motion.div
+            initial={{ scale: 0.9, y: 20 }}
+            animate={{ scale: 1, y: 0 }}
+            exit={{ scale: 0.9, y: 20 }}
+            className="login-card" style={{ maxWidth: '400px' }}
+        >
+            <h2 className="login-title" style={{ fontSize: '1.8rem' }}>Attiva il tuo Account</h2>
+            <p className="login-subtitle" style={{ fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+                Per completare la registrazione, inserisci il codice che hai trovato nella confezione del tuo prodotto MOVE UP.
+            </p>
+            <form onSubmit={onSubmit}>
+                <input
+                    name="accessCode"
+                    type="text"
+                    placeholder="Il tuo codice di attivazione"
+                    className="auth-input"
+                    style={{ textTransform: 'uppercase' }}
+                    required
+                />
+                {error && <div className="feedback-message error" style={{marginTop: '1rem'}}>{error}</div>}
+                <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
+                    <motion.button type="button" onClick={onCancel} className="auth-button" style={{ background: 'grey' }}>
+                        Annulla
+                    </motion.button>
+                    <motion.button type="submit" disabled={loading} className="auth-button">
+                        {loading ? 'Verifico...' : 'Attiva'}
+                    </motion.button>
+                </div>
+            </form>
+        </motion.div>
+    </motion.div>
+);
+
 
 const Login = ({ setCurrentView, setUserName }) => {
   const [isLoginView, setIsLoginView] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [accessCode, setAccessCode] = useState(''); // Stato per il codice di attivazione
+  const [accessCode, setAccessCode] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(null);
   const [verificationSent, setVerificationSent] = useState(false);
+  const [showAccessCodePopup, setShowAccessCodePopup] = useState(false);
+  const [pendingUser, setPendingUser] = useState(null);
 
-  // Gestisce il login con Google
   const handleGoogleLogin = async () => {
     setLoading('google');
     setError(null);
@@ -33,27 +88,23 @@ const Login = ({ setCurrentView, setUserName }) => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       
-      // Controlla se è un nuovo utente Google
       const isNewUser = result._tokenResponse.isNewUser;
       if (isNewUser) {
-        // Per i nuovi utenti Google, per ora diamo accesso diretto.
-        // Una logica più complessa richiederebbe un popup per inserire il codice.
-        setUserName(user.displayName || user.email?.split('@')[0] || 'Atleta');
-        setCurrentView('dashboard');
+        // NUOVO UTENTE GOOGLE: deve inserire il codice di attivazione
+        setPendingUser(user);
+        setShowAccessCodePopup(true);
       } else {
-        // Utente già esistente, accesso diretto
+        // Utente Google già esistente: accesso diretto
         setUserName(user.displayName || user.email?.split('@')[0] || 'Atleta');
         setCurrentView('dashboard');
       }
     } catch (error) {
       console.error("Errore durante il login con Google:", error);
       setError("Impossibile accedere con Google. Riprova.");
-    } finally {
       setLoading(null);
     }
   };
 
-  // Gestisce il login/registrazione con Email e Password
   const handleEmailAuth = async (e) => {
     e.preventDefault();
     setLoading('email');
@@ -63,16 +114,11 @@ const Login = ({ setCurrentView, setUserName }) => {
     
     try {
       if (isLoginView) {
-        // --- Accesso ---
         await signInWithEmailAndPassword(auth, email, password);
       } else {
-        // --- Registrazione ---
-        // 1. Controlla il codice di attivazione
         if (accessCode.toUpperCase() !== MASTER_ACCESS_CODE) {
             throw new Error("Codice di Attivazione non valido.");
         }
-        
-        // 2. Se il codice è valido, crea l'utente
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         await sendEmailVerification(userCredential.user);
         setVerificationSent(true);
@@ -101,6 +147,41 @@ const Login = ({ setCurrentView, setUserName }) => {
     } finally {
       setLoading(null);
     }
+  };
+
+  const handleAccessCodeSubmit = async (e) => {
+      e.preventDefault();
+      setLoading('code');
+      setError(null);
+      const code = e.target.accessCode.value;
+      
+      if (code.toUpperCase() === MASTER_ACCESS_CODE) {
+          // Codice corretto, login completato
+          setUserName(pendingUser.displayName || pendingUser.email?.split('@')[0] || 'Atleta');
+          setCurrentView('dashboard');
+          setShowAccessCodePopup(false);
+          setPendingUser(null);
+          setLoading(null);
+      } else {
+          // Codice errato
+          setError("Codice di Attivazione non valido.");
+          setLoading(null);
+      }
+  };
+
+  const handleCancelPopup = async () => {
+      setLoading('cancel');
+      if (pendingUser) {
+          try {
+              await pendingUser.delete(); // Cancella l'utente Firebase creato
+          } catch (deleteError) {
+              console.error("Errore durante la cancellazione dell'utente:", deleteError);
+          }
+      }
+      setShowAccessCodePopup(false);
+      setPendingUser(null);
+      setLoading(null);
+      setError(null);
   };
 
   return (
@@ -241,6 +322,17 @@ const Login = ({ setCurrentView, setUserName }) => {
         `}
       </style>
       
+      <AnimatePresence>
+        {showAccessCodePopup && (
+            <AccessCodePopup
+                onSubmit={handleAccessCodeSubmit}
+                onCancel={handleCancelPopup}
+                error={error}
+                loading={loading === 'code'}
+            />
+        )}
+      </AnimatePresence>
+
       <div className="login-container">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
@@ -276,7 +368,6 @@ const Login = ({ setCurrentView, setUserName }) => {
                   className="auth-input"
                   required
                 />
-                {/* --- NUOVO CAMPO VISIBILE SOLO IN REGISTRAZIONE --- */}
                 {!isLoginView && (
                     <motion.input
                         key="accessCode"
@@ -331,3 +422,4 @@ const Login = ({ setCurrentView, setUserName }) => {
 };
 
 export default Login;
+
