@@ -1,60 +1,34 @@
 ```
-# Unity project files
-Library/
-Temp/
-Obj/
-Build/
-Builds/
-*.unityproj
-*.sln
-*.csproj
-*.user
-*.userprefs
-*.pidb
-*.booproj
-*.svd
-*.pdb
-*.opendb
-*.unity-test-report.xml
-unity_builtin_extra.res
-unity default resources
-
-# Visual Studio Code
-.vscode/
-
-# Visual Studio
-*.suo
-*.user
-*.userosscache
-*.sln.docstates
-
-# Rider
-.idea/
+# Compressed files
+*.tar.gz
 
 # Environment
 .env
 .env.local
 *.env.*
 
-# Logs
+# Logs and temp files
 *.log
+*.tmp
+*.swp
 
-# OS generated files
+# Editors
+.vscode/
+.idea/
+
+# Dependencies
+node_modules/
+.venv/
+venv/
+__pycache__/
+.mypy_cache/
+.pytest_cache/
+dist/
+build/
+target/
+.gradle/
+
+# System files
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
-desktop.ini
-
-# Build results
-[Bb]in/
-[Oo]bj/
-[Ll]og/
-[Ll]ogs/
-[Tt]emp/
-[Tt]emporary[Vv]isual[Tt]ree.[Bb]in
-[Tt]est[Rr]esults/
 ```
