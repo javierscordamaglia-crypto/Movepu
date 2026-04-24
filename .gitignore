@@ -1,5 +1,5 @@
 ```
-# Unity-specific ignores
+# Unity project files
 Library/
 Temp/
 Obj/
@@ -7,24 +7,20 @@ Build/
 Builds/
 *.unityproj
 *.sln
+*.csproj
 *.user
 *.userprefs
 *.pidb
 *.booproj
 *.svd
-.Testificate
-.unity
-!Assets/Scenes/*.unity.meta
-!Assets/Scripts/*.cs.meta
+*.pdb
+*.opendb
+*.unity-test-report.xml
+unity_builtin_extra.res
+unity default resources
 
-# Build Generated
-*.apk
-*.unitypackage
-*.app
-*.exe
-*.dll
-*.so
-*.dylib
+# Visual Studio Code
+.vscode/
 
 # Visual Studio
 *.suo
@@ -35,25 +31,30 @@ Builds/
 # Rider
 .idea/
 
-# Visual Studio Code
-.vscode/
-
-# Compiled Python files
-*.pyc
-__pycache__/
-*.pyo
-
-# Logs
-*.log
-crashlytics-build.properties
-
-# Environment variables
+# Environment
 .env
 .env.local
 *.env.*
 
-# Dependencies
-node_modules/
-venv/
-.venv/
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+[Tt]emp/
+[Tt]emporary[Vv]isual[Tt]ree.[Bb]in
+[Tt]est[Rr]esults/
 ```
